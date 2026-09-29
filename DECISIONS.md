@@ -249,19 +249,27 @@ pool addresses and not others.
 | `pda.LbPairV2` (4-seed) | 3 of 10 real pools reproduced |
 
 **The gap.** 5 of 10 sampled real pools were reproduced by none of the four
-candidate derivations (`LbPair`, `LbPairV2`, `LbPairV2` using the on-chain
-`base_factor_seed`, `CustomizablePermissionlessLbPair`). A full scan of the raw
-account bytes found no self-reproducing `(bin_step, base_factor)` pair either, so
-the seeds for those pools are not sitting in the account where a Borsh reading of
-the IDL field order expects them.
+candidate derivations. An initial reading blamed nested-struct padding, but that
+was wrong, and the fixtures settle it:
 
-**Why.** `LbPair` embeds nested structs (`StaticParameters`, `VariableParameters`,
-`ProtocolFee`, `RewardInfo`). The IDL lists field *names and order*, not each
-struct's *byte size* after Rust's `repr(C)` alignment padding, so the on-disk
-offset of `bin_step_seed` / `base_factor_seed` cannot be computed from the field
-list alone. Getting those offsets right is the job of the generated account
-decoder (slice 5), which expands every IDL type and is checked against the real
-accounts it decodes.
+| Type | IDL Borsh size + 8 | Fixture bytes | Verdict |
+|---|---|---|---|
+| LbPair | 896 + 8 = 904 | 904 | exact |
+| BinArray | 10128 + 8 = 10136 | 10136 | exact |
+| Oracle (base) | 24 + 8 = 32 | 3232 | base struct exact; the rest is the appended observation buffer |
+
+**`LbPair` is Borsh, not `repr(C)`.** The field list alone is enough to compute
+every offset, and no hidden padding handling is needed. The generator is a plain
+Borsh decoder.
+
+**Why the five still fail.** A scan of the raw account bytes found no
+self-reproducing `(bin_step, base_factor)` pair. The likeliest cause is that the
+seed values were read from the wrong fields: `LbPair` stores `bin_step_seed` and
+`base_factor_seed` separately from the live `bin_step` and `parameters.base_factor`,
+because the live values can be changed by the operator through
+`update_base_fee_parameters` while the seeds are fixed at creation. Confirming
+this needs a correct decoder to read the seed fields, which is what slice 5
+provides.
 
 **Decision.** The integration test asserts on what is fully verified (reserves,
 discriminators) and *reports* pool-address reproduction as a metric, logging the
@@ -271,12 +279,14 @@ written — and a red suite that cannot be acted on trains people to ignore red.
 
 **Consequence.** `pda` is not yet sufficient to enumerate every DLMM pool on chain.
 The 18 derivations cover the layouts this SDK targets, but a caller that must
-cover the full chain needs the account decoder and whatever seed path those five
-pools use. Recorded so the next slice treats it as in-scope, not a surprise.
+cover the full chain needs the account decoder to read the seed fields, and
+possibly a fifth seed path. Recorded so the next slice treats it as in-scope, not
+a surprise.
 
-**Reopen when.** The account decoder lands. If it still cannot reproduce those
-pools from the fields, the seed path is a fifth layout and it gets added to `pda`
-with a live-derived golden value.
+**Reopen when.** The account decoder lands. It should read `bin_step_seed` and
+`base_factor_seed` and re-derive the five pools from those, not from the live
+fields. If it still cannot reproduce them, a fifth layout exists and it gets added
+to `pda` with a live-derived golden value.
 
 ---
 
