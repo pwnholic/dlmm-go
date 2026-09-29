@@ -15,10 +15,12 @@ import (
 // from the program exactly where the program refuses.
 func Add(a, b num.U128) (num.U128, error) {
 	lo, carry := bits.Add64(a.Lo, b.Lo, 0)
+
 	hi, carryOut := bits.Add64(a.Hi, b.Hi, carry)
 	if carryOut != 0 {
 		return num.U128{}, fmt.Errorf("%w: %s + %s", ErrOverflow, a, b)
 	}
+
 	return num.U128{Lo: lo, Hi: hi}, nil
 }
 
@@ -27,10 +29,12 @@ func Add(a, b num.U128) (num.U128, error) {
 // It reports ErrOverflow when b exceeds a, which is the Rust checked_sub case.
 func Sub(a, b num.U128) (num.U128, error) {
 	lo, borrow := bits.Sub64(a.Lo, b.Lo, 0)
+
 	hi, borrowOut := bits.Sub64(a.Hi, b.Hi, borrow)
 	if borrowOut != 0 {
 		return num.U128{}, fmt.Errorf("%w: %s - %s is negative", ErrOverflow, a, b)
 	}
+
 	return num.U128{Lo: lo, Hi: hi}, nil
 }
 
@@ -43,10 +47,12 @@ func Mul(a, b num.U128) (num.U128, error) {
 	if !product.IsU128() {
 		return num.U128{}, fmt.Errorf("%w: %s * %s", ErrOverflow, a, b)
 	}
+
 	out, err := product.ToU128()
 	if err != nil {
 		return num.U128{}, fmt.Errorf("%w: %s * %s", ErrOverflow, a, b)
 	}
+
 	return out, nil
 }
 
