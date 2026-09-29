@@ -233,6 +233,53 @@ requirements, at which point the guard becomes unnecessary.
 
 ---
 
+## I14 — Five of ten real pools use a seed path not yet in `pda`
+
+**Context.** The first integration test — fetching live pools from the Meteora
+data API and confirming each derived address against the chain — reproduced some
+pool addresses and not others.
+
+**What is now verified against the chain (not just internally):**
+
+| Quantity | Result |
+|---|---|
+| `pda.Reserve` | 20/20 reserve addresses match the chain's `reserve_x` / `reserve_y` for 10 real pools |
+| `pda.AccountKind` / discriminators | 10/10 live accounts carry the LbPair discriminator |
+| `pda.LbPair` (3-seed) | 2 of 10 real pools reproduced |
+| `pda.LbPairV2` (4-seed) | 3 of 10 real pools reproduced |
+
+**The gap.** 5 of 10 sampled real pools were reproduced by none of the four
+candidate derivations (`LbPair`, `LbPairV2`, `LbPairV2` using the on-chain
+`base_factor_seed`, `CustomizablePermissionlessLbPair`). A full scan of the raw
+account bytes found no self-reproducing `(bin_step, base_factor)` pair either, so
+the seeds for those pools are not sitting in the account where a Borsh reading of
+the IDL field order expects them.
+
+**Why.** `LbPair` embeds nested structs (`StaticParameters`, `VariableParameters`,
+`ProtocolFee`, `RewardInfo`). The IDL lists field *names and order*, not each
+struct's *byte size* after Rust's `repr(C)` alignment padding, so the on-disk
+offset of `bin_step_seed` / `base_factor_seed` cannot be computed from the field
+list alone. Getting those offsets right is the job of the generated account
+decoder (slice 5), which expands every IDL type and is checked against the real
+accounts it decodes.
+
+**Decision.** The integration test asserts on what is fully verified (reserves,
+discriminators) and *reports* pool-address reproduction as a metric, logging the
+unreproduced pools as a known gap. It does not fail on them, because an
+unreproduced pool is a missing derivation, not a regression in what has been
+written — and a red suite that cannot be acted on trains people to ignore red.
+
+**Consequence.** `pda` is not yet sufficient to enumerate every DLMM pool on chain.
+The 18 derivations cover the layouts this SDK targets, but a caller that must
+cover the full chain needs the account decoder and whatever seed path those five
+pools use. Recorded so the next slice treats it as in-scope, not a surprise.
+
+**Reopen when.** The account decoder lands. If it still cannot reproduce those
+pools from the fields, the seed path is a fifth layout and it gets added to `pda`
+with a live-derived golden value.
+
+---
+
 ## I12 — Seven defects, and the one that hid behind a green test
 
 **Context.** The numeric core was written, hand-traced, and reviewed before any
@@ -288,14 +335,18 @@ The defects above make the accounting concrete:
 |---|---|
 | The module type-checks | **Verified** — `go vet ./...` exit 0, and the exit code was shown non-zero on deliberately broken input |
 | The arithmetic is correct | **Verified against an independent oracle** — 4,747 golden vectors computed in Python with exact integers, cross-checked by a second method using `fractions.Fraction`, 0 mismatches |
-| The Go suite passes | **Verified** — 6 packages, exit 0 |
+| The Go suite passes | **Verified** — 6 packages, exit 0, plus the integration build |
+| `pda.Reserve` and the discriminators | **Verified on chain** — 20/20 reserve addresses and 10/10 account discriminators match live mainnet data (I14) |
+| Some pool addresses are reproduced on chain | **Verified in part** — 5 of 10 real pools reproduced; the rest use a seed path not yet in `pda` (I14) |
+| Every real pool address is derivable | **Not yet** — closing this needs the account decoder (slice 5) |
 | The tests have teeth | **Partially verified** — 3 mutations of `num` were each caught; the numeric-suite defects surfaced as vector failures |
-| A derived pool address matches the chain | **Not verified** — `pda.TestGoldenAddresses` is still skipped; property tests prove only internal consistency |
-| Anything talks to a real cluster | **Not started** — no client code exists yet |
+| Anything talks to a real cluster | **Partially** — the integration test reads mainnet; no write path exists yet |
 
 The second row is the one that changed. Before the vectors existed, "the
 arithmetic is correct" rested on hand-tracing, which is what missed defects 1, 2,
-6 and 7.
+6 and 7. The live-pool test is the same story one level up: property tests proved
+`pda` was internally consistent, and only reading the chain showed that five real
+pools sit outside the derivations it ships.
 
 ---
 

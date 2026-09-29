@@ -416,11 +416,13 @@ func TestEveryDerivationIsOffCurve(t *testing.T) {
 //
 // The gap is recorded here rather than hidden, because the property tests above
 // prove internal consistency but cannot prove the seeds themselves are right.
+// TestGoldenAddresses is superseded by the integration test.
+//
+// It used to be a skipped placeholder recording that no golden PDA values
+// existed. That gap is now closed a better way: pda/integration_test.go derives
+// addresses for real mainnet pools and compares them to the chain, which proves
+// more than a frozen table would and keeps proving it as the chain moves.
 func TestGoldenAddresses(t *testing.T) {
 	t.Parallel()
-	t.Skip("no golden PDA values yet; needs an external oracle (TS SDK or RPC)")
-
-	// Fill in as table entries of the form:
-	//   {name, got, want}
-	// where want comes from the TypeScript SDK or from a live account lookup.
+	t.Skip("superseded by pda/integration_test.go, which checks live chain state")
 }

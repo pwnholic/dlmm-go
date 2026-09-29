@@ -219,6 +219,38 @@ def parse_go_u128(src: str) -> dict[str, int]:
     return out
 
 
+DISC_PATH = ROOT / "program" / "lbclmm" / "discriminators.go"
+
+# Go AccountKind constant -> IDL account name.
+ACCOUNT_KINDS = {
+    "AccountBinArray": "BinArray",
+    "AccountBinArrayBitmapExtension": "BinArrayBitmapExtension",
+    "AccountClaimFeeOperator": "ClaimFeeOperator",
+    "AccountDummyZcAccount": "DummyZcAccount",
+    "AccountLbPair": "LbPair",
+    "AccountLimitOrder": "LimitOrder",
+    "AccountOperator": "Operator",
+    "AccountOracle": "Oracle",
+    "AccountPositionV2": "PositionV2",
+    "AccountPresetParameter": "PresetParameter",
+    "AccountPresetParameter2": "PresetParameter2",
+    "AccountTokenBadge": "TokenBadge",
+}
+
+
+def parse_go_discriminators(src: str) -> dict[str, tuple[int, ...]]:
+    """Extract `AccountX: {1, 2, ...}` entries from the discriminator map."""
+    out: dict[str, tuple[int, ...]] = {}
+
+    for m in re.finditer(
+        r"^\t(Account\w+):\s*\{([0-9,\s]+)\},\s*$", src, re.M
+    ):
+        values = tuple(int(v.strip()) for v in m.group(2).split(",") if v.strip())
+        out[m.group(1)] = values
+
+    return out
+
+
 def main() -> int:
     if not IDL_PATH.exists():
         print(f"FAIL: IDL not found at {IDL_PATH}", file=sys.stderr)
@@ -350,7 +382,41 @@ def main() -> int:
                 "this check exists to protect may no longer hold"
             )
 
-    # 7) Independent sanity: the extension must strictly widen the default range.
+    # 7) Account discriminators against the IDL.
+    #
+    # A discriminator is what makes an account identifiable; a wrong one means a
+    # decoder either rejects every real account or, worse, accepts an unrelated
+    # account and reads its bytes as pool state.
+    if DISC_PATH.exists():
+        disc = parse_go_discriminators(DISC_PATH.read_text())
+        idl_accounts = {a["name"]: a["discriminator"] for a in idl.get("accounts", [])}
+
+        for go_name, idl_name in ACCOUNT_KINDS.items():
+            want = idl_accounts.get(idl_name)
+            if want is None:
+                failures.append(f"{idl_name}: account absent from the IDL")
+                continue
+
+            if go_name not in disc:
+                failures.append(f"{go_name}: not found in discriminators.go")
+                continue
+
+            checked += 1
+            if list(disc[go_name]) != list(want):
+                failures.append(
+                    f"{go_name}: Go has {list(disc[go_name])}, IDL has {list(want)}"
+                )
+
+        # Every IDL account must be represented, not just the ones listed above.
+        unlisted = set(idl_accounts) - set(ACCOUNT_KINDS.values())
+        if unlisted:
+            failures.append(f"IDL accounts with no Go discriminator: {sorted(unlisted)}")
+    else:
+        failures.append(
+            f"{DISC_PATH.name} is missing; account discriminators cannot be verified"
+        )
+
+    # 8) Independent sanity: the extension must strictly widen the default range.
     if (
         goscalar.get("MinBinArrayIndexWithExtension", 0)
         >= goscalar.get("MinBinArrayIndexInDefaultBitmap", 0)
