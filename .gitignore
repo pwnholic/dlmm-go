@@ -1,0 +1,49 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.out
+coverage.html
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work.sum
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files
+#
+# .envrc is listed explicitly: direnv keeps real credentials there, and the
+# .env / .env.*.local patterns below do not match it. Committing it would
+# publish the Helius API key that the integration tests read.
+.envrc
+.envrc.*
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+/tmp/
+
+# Air hot reload
+tmp/
+
+package-referense/
