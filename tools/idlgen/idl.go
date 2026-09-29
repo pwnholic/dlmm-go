@@ -12,8 +12,8 @@ import (
 // objects for everything else, which is why Type is json.RawMessage rather than
 // a struct.
 type idl struct {
-	Version  string          `json:"version"`
-	Address  string          `json:"address"`
+	Version  string `json:"version"`
+	Address  string `json:"address"`
 	Metadata struct {
 		Name    string `json:"name"`
 		Version string `json:"version"`

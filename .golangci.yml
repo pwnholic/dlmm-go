@@ -139,6 +139,14 @@ linters:
           - dupl
           - gocyclo
 
+      # G304 flags os.ReadFile with a computed path. A test fixture loader does
+      # exactly that, and the path is assembled from a hard-coded vector file
+      # rather than from input, so there is no traversal surface here.
+      - path: _test\.go$
+        linters:
+          - gosec
+        text: "G304"
+
   settings:
     dupl:
       threshold: 100 # lower => stricter (tokens)

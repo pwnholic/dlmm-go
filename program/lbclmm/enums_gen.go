@@ -2,6 +2,12 @@
 
 package lbclmm
 
+import (
+	"fmt"
+
+	bin "github.com/gagliardetto/binary"
+)
+
 // AccountsType mirrors the IDL enum AccountsType. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
 type AccountsType uint8
@@ -15,6 +21,22 @@ const (
 	AccountsTypeTransferHookReferral    AccountsType = 4
 )
 
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *AccountsType) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode AccountsType into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading AccountsType: %w", err)
+	}
+	if v >= 5 {
+		return fmt.Errorf("lbclmm: AccountsType has %d variants, got %d", 5, v)
+	}
+	*e = AccountsType(v)
+	return nil
+}
+
 // ActivationType mirrors the IDL enum ActivationType. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
 type ActivationType uint8
@@ -25,6 +47,22 @@ const (
 	ActivationTypeTimestamp ActivationType = 1
 )
 
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *ActivationType) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode ActivationType into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading ActivationType: %w", err)
+	}
+	if v >= 2 {
+		return fmt.Errorf("lbclmm: ActivationType has %d variants, got %d", 2, v)
+	}
+	*e = ActivationType(v)
+	return nil
+}
+
 // PairStatus mirrors the IDL enum PairStatus. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
 type PairStatus uint8
@@ -34,6 +72,22 @@ const (
 	PairStatusEnabled  PairStatus = 0
 	PairStatusDisabled PairStatus = 1
 )
+
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *PairStatus) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode PairStatus into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading PairStatus: %w", err)
+	}
+	if v >= 2 {
+		return fmt.Errorf("lbclmm: PairStatus has %d variants, got %d", 2, v)
+	}
+	*e = PairStatus(v)
+	return nil
+}
 
 // PairType mirrors the IDL enum PairType. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
@@ -47,6 +101,22 @@ const (
 	PairTypePermissionlessV2           PairType = 3
 )
 
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *PairType) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode PairType into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading PairType: %w", err)
+	}
+	if v >= 4 {
+		return fmt.Errorf("lbclmm: PairType has %d variants, got %d", 4, v)
+	}
+	*e = PairType(v)
+	return nil
+}
+
 // ResizeSide mirrors the IDL enum ResizeSide. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
 type ResizeSide uint8
@@ -57,6 +127,22 @@ const (
 	ResizeSideUpper   ResizeSide = 1
 )
 
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *ResizeSide) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode ResizeSide into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading ResizeSide: %w", err)
+	}
+	if v >= 2 {
+		return fmt.Errorf("lbclmm: ResizeSide has %d variants, got %d", 2, v)
+	}
+	*e = ResizeSide(v)
+	return nil
+}
+
 // Rounding mirrors the IDL enum Rounding. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
 type Rounding uint8
@@ -66,6 +152,22 @@ const (
 	RoundingUp      Rounding = 0
 	RoundingDown    Rounding = 1
 )
+
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *Rounding) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode Rounding into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading Rounding: %w", err)
+	}
+	if v >= 2 {
+		return fmt.Errorf("lbclmm: Rounding has %d variants, got %d", 2, v)
+	}
+	*e = Rounding(v)
+	return nil
+}
 
 // StrategyType mirrors the IDL enum StrategyType. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
@@ -84,6 +186,22 @@ const (
 	StrategyTypeBidAskImBalanced StrategyType = 8
 )
 
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *StrategyType) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode StrategyType into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading StrategyType: %w", err)
+	}
+	if v >= 9 {
+		return fmt.Errorf("lbclmm: StrategyType has %d variants, got %d", 9, v)
+	}
+	*e = StrategyType(v)
+	return nil
+}
+
 // TokenProgramFlags mirrors the IDL enum TokenProgramFlags. The zero value is an explicit unknown sentinel so a zero-valued field cannot masquerade as the first real variant.
 
 type TokenProgramFlags uint8
@@ -93,3 +211,19 @@ const (
 	TokenProgramFlagsTokenProgram     TokenProgramFlags = 0
 	TokenProgramFlagsTokenProgram2022 TokenProgramFlags = 1
 )
+
+// UnmarshalWithDecoder reads the one-byte discriminant.
+func (e *TokenProgramFlags) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if e == nil {
+		return fmt.Errorf("lbclmm: cannot decode TokenProgramFlags into a nil receiver")
+	}
+	v, err := dec.ReadUint8()
+	if err != nil {
+		return fmt.Errorf("reading TokenProgramFlags: %w", err)
+	}
+	if v >= 2 {
+		return fmt.Errorf("lbclmm: TokenProgramFlags has %d variants, got %d", 2, v)
+	}
+	*e = TokenProgramFlags(v)
+	return nil
+}

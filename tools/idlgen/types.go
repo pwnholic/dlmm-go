@@ -117,9 +117,9 @@ type typeGraph struct {
 }
 
 type typeInfo struct {
-	def     idlType
-	fields  []resolvedField
-	isEnum  bool
+	def      idlType
+	fields   []resolvedField
+	isEnum   bool
 	variants []idlEnumCase
 	// size is the Borsh payload size; -1 when the type is variable-length.
 	size int
@@ -254,9 +254,9 @@ func (g *typeGraph) refSize(t *typeRef, depth int) (int, error) {
 // LbPair is 904 bytes on chain and BinArray is 10136, both including the
 // 8-byte account discriminator, so the payload sizes are 896 and 10128.
 var knownSizes = map[string]int{
-	"LbPair":  896,
+	"LbPair":   896,
 	"BinArray": 10128,
-	"Oracle": 24,
+	"Oracle":   24,
 }
 
 func (g *typeGraph) assertKnownSizes() error {

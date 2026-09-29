@@ -3,8 +3,11 @@
 package lbclmm
 
 import (
-	solana "github.com/gagliardetto/solana-go"
+	"encoding/binary"
+	"fmt"
 
+	bin "github.com/gagliardetto/binary"
+	solana "github.com/gagliardetto/solana-go"
 	"github.com/pwnholic/dlmm-go/num"
 )
 
@@ -876,3 +879,4174 @@ type WithdrawIneligibleReward struct {
 	RewardMint solana.PublicKey
 	Amount     uint64
 }
+
+// UnmarshalWithDecoder reads AddLiquidity in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *AddLiquidity) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode AddLiquidity into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.From = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.Amounts {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.Amounts[i] = uint64(v)
+		}
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveBinId = int32(v)
+	}
+	return nil
+}
+
+// PayloadSizeAddLiquidity is the Borsh payload size of AddLiquidity, excluding the
+// 8-byte account discriminator.
+const PayloadSizeAddLiquidity = 116
+
+// UnmarshalWithDecoder reads AddLiquidityParams in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *AddLiquidityParams) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode AddLiquidityParams into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MinDeltaId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxDeltaId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.X0 = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Y0 = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.DeltaX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.DeltaY = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BitFlag = uint8(v)
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.FavorXInActiveId = v
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeAddLiquidityParams is the Borsh payload size of AddLiquidityParams, excluding the
+// 8-byte account discriminator.
+const PayloadSizeAddLiquidityParams = 58
+
+// UnmarshalWithDecoder reads AddLiquiditySingleSidePreciseParameter in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *AddLiquiditySingleSidePreciseParameter) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode AddLiquiditySingleSidePreciseParameter into a nil receiver")
+	}
+	// TODO(idlgen): field bins of type kind vec is not handled
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.DecompressMultiplier = uint64(v)
+	}
+	return nil
+}
+
+// UnmarshalWithDecoder reads AddLiquiditySingleSidePreciseParameter2 in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *AddLiquiditySingleSidePreciseParameter2) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode AddLiquiditySingleSidePreciseParameter2 into a nil receiver")
+	}
+	// TODO(idlgen): field bins of type kind vec is not handled
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.DecompressMultiplier = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.MaxAmount = uint64(v)
+	}
+	return nil
+}
+
+// UnmarshalWithDecoder reads BaseFeeParameter in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *BaseFeeParameter) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode BaseFeeParameter into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ProtocolShare = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BaseFeePowerFactor = uint8(v)
+	}
+	return nil
+}
+
+// PayloadSizeBaseFeeParameter is the Borsh payload size of BaseFeeParameter, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBaseFeeParameter = 5
+
+// UnmarshalWithDecoder reads Bin in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *Bin) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode Bin into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountY = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.Price = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.LiquiditySupply = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FulfilledOrderAmountX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FulfilledOrderAmountY = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.LimitOrderFeeAskSide = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.LimitOrderFeeBidSide = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.FeeAmountXPerTokenStored = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.FeeAmountYPerTokenStored = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.OpenOrderAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.TotalProcessingOrderAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.ProcessedOrderRemainingAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.OrderAge = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.LimitOrderAskSide = uint8(v)
+	}
+	for i := range m.Padding1 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding1[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeBin is the Borsh payload size of Bin, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBin = 144
+
+// UnmarshalWithDecoder reads BinArray in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *BinArray) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode BinArray into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i64: %w", err)
+		}
+		m.Index = int64(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Version = uint8(v)
+	}
+	for i := range m.Padding1 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding1[i] = uint8(v)
+		}
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.Bins {
+		if err := m.Bins[i].UnmarshalWithDecoder(dec); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// PayloadSizeBinArray is the Borsh payload size of BinArray, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBinArray = 10128
+
+// UnmarshalWithDecoder reads BinArrayBitmapExtension in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *BinArrayBitmapExtension) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode BinArrayBitmapExtension into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.PositiveBinArrayBitmap {
+		for i := range m.PositiveBinArrayBitmap[i] {
+			{
+				v, err := dec.ReadUint64(binary.LittleEndian)
+				if err != nil {
+					return fmt.Errorf("reading u64: %w", err)
+				}
+				m.PositiveBinArrayBitmap[i][i] = uint64(v)
+			}
+		}
+	}
+	for i := range m.NegativeBinArrayBitmap {
+		for i := range m.NegativeBinArrayBitmap[i] {
+			{
+				v, err := dec.ReadUint64(binary.LittleEndian)
+				if err != nil {
+					return fmt.Errorf("reading u64: %w", err)
+				}
+				m.NegativeBinArrayBitmap[i][i] = uint64(v)
+			}
+		}
+	}
+	return nil
+}
+
+// PayloadSizeBinArrayBitmapExtension is the Borsh payload size of BinArrayBitmapExtension, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBinArrayBitmapExtension = 1568
+
+// UnmarshalWithDecoder reads BinLimitOrderAmount in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *BinLimitOrderAmount) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode BinLimitOrderAmount into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.Id = int32(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Amount = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeBinLimitOrderAmount is the Borsh payload size of BinLimitOrderAmount, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBinLimitOrderAmount = 12
+
+// UnmarshalWithDecoder reads BinLiquidityDistribution in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *BinLiquidityDistribution) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode BinLiquidityDistribution into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.BinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DistributionX = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DistributionY = uint16(v)
+	}
+	return nil
+}
+
+// PayloadSizeBinLiquidityDistribution is the Borsh payload size of BinLiquidityDistribution, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBinLiquidityDistribution = 8
+
+// UnmarshalWithDecoder reads BinLiquidityDistributionByWeight in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *BinLiquidityDistributionByWeight) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode BinLiquidityDistributionByWeight into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.BinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.Weight = uint16(v)
+	}
+	return nil
+}
+
+// PayloadSizeBinLiquidityDistributionByWeight is the Borsh payload size of BinLiquidityDistributionByWeight, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBinLiquidityDistributionByWeight = 6
+
+// UnmarshalWithDecoder reads BinLiquidityReduction in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *BinLiquidityReduction) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode BinLiquidityReduction into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.BinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BpsToRemove = uint16(v)
+	}
+	return nil
+}
+
+// PayloadSizeBinLiquidityReduction is the Borsh payload size of BinLiquidityReduction, excluding the
+// 8-byte account discriminator.
+const PayloadSizeBinLiquidityReduction = 6
+
+// UnmarshalWithDecoder reads CancelLimitOrderEvt in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *CancelLimitOrderEvt) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode CancelLimitOrderEvt into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.From = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LimitOrder = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.Amounts {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.Amounts[i] = uint64(v)
+		}
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	// TODO(idlgen): field bins of type kind vec is not handled
+	return nil
+}
+
+// UnmarshalWithDecoder reads ClaimFee in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *ClaimFee) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode ClaimFee into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FeeX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FeeY = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeClaimFee is the Borsh payload size of ClaimFee, excluding the
+// 8-byte account discriminator.
+const PayloadSizeClaimFee = 112
+
+// UnmarshalWithDecoder reads ClaimFee2 in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *ClaimFee2) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode ClaimFee2 into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FeeX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FeeY = uint64(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveBinId = int32(v)
+	}
+	return nil
+}
+
+// PayloadSizeClaimFee2 is the Borsh payload size of ClaimFee2, excluding the
+// 8-byte account discriminator.
+const PayloadSizeClaimFee2 = 116
+
+// UnmarshalWithDecoder reads ClaimFeeOperator in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *ClaimFeeOperator) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode ClaimFeeOperator into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Operator = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeClaimFeeOperator is the Borsh payload size of ClaimFeeOperator, excluding the
+// 8-byte account discriminator.
+const PayloadSizeClaimFeeOperator = 160
+
+// UnmarshalWithDecoder reads ClaimReward in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *ClaimReward) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode ClaimReward into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardIndex = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.TotalReward = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeClaimReward is the Borsh payload size of ClaimReward, excluding the
+// 8-byte account discriminator.
+const PayloadSizeClaimReward = 112
+
+// UnmarshalWithDecoder reads ClaimReward2 in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *ClaimReward2) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode ClaimReward2 into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardIndex = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.TotalReward = uint64(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveBinId = int32(v)
+	}
+	return nil
+}
+
+// PayloadSizeClaimReward2 is the Borsh payload size of ClaimReward2, excluding the
+// 8-byte account discriminator.
+const PayloadSizeClaimReward2 = 116
+
+// UnmarshalWithDecoder reads CloseLimitOrderEvt in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *CloseLimitOrderEvt) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode CloseLimitOrderEvt into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LimitOrder = solana.PublicKeyFromBytes(b)
+	}
+	return nil
+}
+
+// PayloadSizeCloseLimitOrderEvt is the Borsh payload size of CloseLimitOrderEvt, excluding the
+// 8-byte account discriminator.
+const PayloadSizeCloseLimitOrderEvt = 96
+
+// UnmarshalWithDecoder reads CompositionFee in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *CompositionFee) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode CompositionFee into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.From = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadInt16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i16: %w", err)
+		}
+		m.BinId = int16(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.TokenXFeeAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.TokenYFeeAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.ProtocolTokenXFeeAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.ProtocolTokenYFeeAmount = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeCompositionFee is the Borsh payload size of CompositionFee, excluding the
+// 8-byte account discriminator.
+const PayloadSizeCompositionFee = 66
+
+// UnmarshalWithDecoder reads CompressedBinDepositAmount in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *CompressedBinDepositAmount) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode CompressedBinDepositAmount into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.BinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.Amount = uint32(v)
+	}
+	return nil
+}
+
+// PayloadSizeCompressedBinDepositAmount is the Borsh payload size of CompressedBinDepositAmount, excluding the
+// 8-byte account discriminator.
+const PayloadSizeCompressedBinDepositAmount = 8
+
+// UnmarshalWithDecoder reads CustomizableParams in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *CustomizableParams) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode CustomizableParams into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinStep = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ActivationType = uint8(v)
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.HasAlphaVault = v
+	}
+	{
+		present, err := dec.ReadOption()
+		if err != nil {
+			return fmt.Errorf("reading option tag: %w", err)
+		}
+		m.ActivationPoint.Some = present
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.CreatorPoolOnOffControl = v
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BaseFeePowerFactor = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ConcreteFunctionType = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.CollectFeeMode = uint8(v)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeCustomizableParams is the Borsh payload size of CustomizableParams, excluding the
+// 8-byte account discriminator.
+const PayloadSizeCustomizableParams = 83
+
+// UnmarshalWithDecoder reads DecreasePositionLength in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *DecreasePositionLength) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode DecreasePositionLength into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.LengthToRemove = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Side = uint8(v)
+	}
+	return nil
+}
+
+// PayloadSizeDecreasePositionLength is the Borsh payload size of DecreasePositionLength, excluding the
+// 8-byte account discriminator.
+const PayloadSizeDecreasePositionLength = 99
+
+// UnmarshalWithDecoder reads DummyIx in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *DummyIx) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode DummyIx into a nil receiver")
+	}
+	if err := m.PairStatus.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.PairType.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.ActivationType.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.TokenProgramFlag.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.ResizeSide.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.Rounding.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	return nil
+}
+
+// PayloadSizeDummyIx is the Borsh payload size of DummyIx, excluding the
+// 8-byte account discriminator.
+const PayloadSizeDummyIx = 6
+
+// UnmarshalWithDecoder reads DummyZcAccount in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *DummyZcAccount) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode DummyZcAccount into a nil receiver")
+	}
+	if err := m.PositionBinData.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.LimitOrderBinData.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	return nil
+}
+
+// PayloadSizeDummyZcAccount is the Borsh payload size of DummyZcAccount, excluding the
+// 8-byte account discriminator.
+const PayloadSizeDummyZcAccount = 144
+
+// UnmarshalWithDecoder reads DynamicFeeParameter in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *DynamicFeeParameter) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode DynamicFeeParameter into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.FilterPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DecayPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ReductionFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VariableFeeControl = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.MaxVolatilityAccumulator = uint32(v)
+	}
+	return nil
+}
+
+// PayloadSizeDynamicFeeParameter is the Borsh payload size of DynamicFeeParameter, excluding the
+// 8-byte account discriminator.
+const PayloadSizeDynamicFeeParameter = 14
+
+// UnmarshalWithDecoder reads DynamicFeeParameterUpdate in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *DynamicFeeParameterUpdate) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode DynamicFeeParameterUpdate into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.FilterPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DecayPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ReductionFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VariableFeeControl = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.MaxVolatilityAccumulator = uint32(v)
+	}
+	return nil
+}
+
+// PayloadSizeDynamicFeeParameterUpdate is the Borsh payload size of DynamicFeeParameterUpdate, excluding the
+// 8-byte account discriminator.
+const PayloadSizeDynamicFeeParameterUpdate = 46
+
+// UnmarshalWithDecoder reads FeeInfo in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *FeeInfo) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode FeeInfo into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.FeeXPerTokenComplete = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.FeeYPerTokenComplete = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FeeXPending = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.FeeYPending = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeFeeInfo is the Borsh payload size of FeeInfo, excluding the
+// 8-byte account discriminator.
+const PayloadSizeFeeInfo = 48
+
+// UnmarshalWithDecoder reads FeeParameterUpdate in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *FeeParameterUpdate) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode FeeParameterUpdate into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ProtocolShare = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BaseFeePowerFactor = uint8(v)
+	}
+	return nil
+}
+
+// PayloadSizeFeeParameterUpdate is the Borsh payload size of FeeParameterUpdate, excluding the
+// 8-byte account discriminator.
+const PayloadSizeFeeParameterUpdate = 37
+
+// UnmarshalWithDecoder reads FundReward in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *FundReward) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode FundReward into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Funder = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardIndex = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Amount = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeFundReward is the Borsh payload size of FundReward, excluding the
+// 8-byte account discriminator.
+const PayloadSizeFundReward = 80
+
+// UnmarshalWithDecoder reads GoToABin in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *GoToABin) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode GoToABin into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.FromBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ToBinId = int32(v)
+	}
+	return nil
+}
+
+// PayloadSizeGoToABin is the Borsh payload size of GoToABin, excluding the
+// 8-byte account discriminator.
+const PayloadSizeGoToABin = 40
+
+// UnmarshalWithDecoder reads IncreaseObservation in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *IncreaseObservation) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode IncreaseObservation into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Oracle = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.NewObservationLength = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeIncreaseObservation is the Borsh payload size of IncreaseObservation, excluding the
+// 8-byte account discriminator.
+const PayloadSizeIncreaseObservation = 40
+
+// UnmarshalWithDecoder reads IncreasePositionLength in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *IncreasePositionLength) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode IncreasePositionLength into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.LengthToAdd = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Side = uint8(v)
+	}
+	return nil
+}
+
+// PayloadSizeIncreasePositionLength is the Borsh payload size of IncreasePositionLength, excluding the
+// 8-byte account discriminator.
+const PayloadSizeIncreasePositionLength = 99
+
+// UnmarshalWithDecoder reads InitPermissionPairIx in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *InitPermissionPairIx) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode InitPermissionPairIx into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinStep = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BaseFeePowerFactor = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ActivationType = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.Padding0 = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ConcreteFunctionType = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.CollectFeeMode = uint8(v)
+	}
+	return nil
+}
+
+// PayloadSizeInitPermissionPairIx is the Borsh payload size of InitPermissionPairIx, excluding the
+// 8-byte account discriminator.
+const PayloadSizeInitPermissionPairIx = 14
+
+// UnmarshalWithDecoder reads InitPresetParametersIx in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *InitPresetParametersIx) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode InitPresetParametersIx into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.Index = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinStep = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.FilterPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DecayPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ReductionFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VariableFeeControl = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.MaxVolatilityAccumulator = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ProtocolShare = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BaseFeePowerFactor = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ConcreteFunctionType = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.CollectFeeMode = uint8(v)
+	}
+	return nil
+}
+
+// PayloadSizeInitPresetParametersIx is the Borsh payload size of InitPresetParametersIx, excluding the
+// 8-byte account discriminator.
+const PayloadSizeInitPresetParametersIx = 25
+
+// UnmarshalWithDecoder reads InitializeLbPair2Params in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *InitializeLbPair2Params) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode InitializeLbPair2Params into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeInitializeLbPair2Params is the Borsh payload size of InitializeLbPair2Params, excluding the
+// 8-byte account discriminator.
+const PayloadSizeInitializeLbPair2Params = 100
+
+// UnmarshalWithDecoder reads InitializeReward in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *InitializeReward) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode InitializeReward into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.RewardMint = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Funder = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardIndex = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardDuration = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeInitializeReward is the Borsh payload size of InitializeReward, excluding the
+// 8-byte account discriminator.
+const PayloadSizeInitializeReward = 112
+
+// UnmarshalWithDecoder reads LbPair in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LbPair) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LbPair into a nil receiver")
+	}
+	if err := m.Parameters.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.VParameters.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	for i := range m.BumpSeed {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.BumpSeed[i] = uint8(v)
+		}
+	}
+	for i := range m.BinStepSeed {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.BinStepSeed[i] = uint8(v)
+		}
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.PairType = uint8(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinStep = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Status = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.RequireBaseFactorSeed = uint8(v)
+	}
+	for i := range m.BaseFactorSeed {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.BaseFactorSeed[i] = uint8(v)
+		}
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ActivationType = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.CreatorPoolOnOffControl = uint8(v)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.TokenXMint = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.TokenYMint = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.ReserveX = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.ReserveY = solana.PublicKeyFromBytes(b)
+	}
+	if err := m.ProtocolFee.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	for i := range m.Padding1 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding1[i] = uint8(v)
+		}
+	}
+	for i := range m.RewardInfos {
+		if err := m.RewardInfos[i].UnmarshalWithDecoder(dec); err != nil {
+			return err
+		}
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Oracle = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.BinArrayBitmap {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.BinArrayBitmap[i] = uint64(v)
+		}
+	}
+	{
+		v, err := dec.ReadInt64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i64: %w", err)
+		}
+		m.LastUpdatedAt = int64(v)
+	}
+	for i := range m.Padding2 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding2[i] = uint8(v)
+		}
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.PreActivationSwapAddress = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.BaseKey = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.ActivationPoint = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.PreActivationDuration = uint64(v)
+	}
+	for i := range m.Padding3 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding3[i] = uint8(v)
+		}
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Padding4 = uint64(v)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Creator = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.TokenMintXProgramFlag = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.TokenMintYProgramFlag = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Version = uint8(v)
+	}
+	for i := range m.Reserved {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Reserved[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeLbPair is the Borsh payload size of LbPair, excluding the
+// 8-byte account discriminator.
+const PayloadSizeLbPair = 896
+
+// UnmarshalWithDecoder reads LbPairCreate in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LbPairCreate) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LbPairCreate into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinStep = uint16(v)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.TokenX = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.TokenY = solana.PublicKeyFromBytes(b)
+	}
+	return nil
+}
+
+// PayloadSizeLbPairCreate is the Borsh payload size of LbPairCreate, excluding the
+// 8-byte account discriminator.
+const PayloadSizeLbPairCreate = 98
+
+// UnmarshalWithDecoder reads LimitOrder in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LimitOrder) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LimitOrder into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinCount = uint16(v)
+	}
+	for i := range m.Padding0 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding0[i] = uint8(v)
+		}
+	}
+	for i := range m.Padding1 {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.Padding1[i] = uint64(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeLimitOrder is the Borsh payload size of LimitOrder, excluding the
+// 8-byte account discriminator.
+const PayloadSizeLimitOrder = 112
+
+// UnmarshalWithDecoder reads LimitOrderBinData in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LimitOrderBinData) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LimitOrderBinData into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Amount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.Age = uint32(v)
+	}
+	for i := range m.Padding0 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding0[i] = uint8(v)
+		}
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.BinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.IsAsk = uint8(v)
+	}
+	for i := range m.Padding1 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding1[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeLimitOrderBinData is the Borsh payload size of LimitOrderBinData, excluding the
+// 8-byte account discriminator.
+const PayloadSizeLimitOrderBinData = 32
+
+// UnmarshalWithDecoder reads LiquidityOneSideParameter in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LiquidityOneSideParameter) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LiquidityOneSideParameter into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Amount = uint64(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxActiveBinSlippage = int32(v)
+	}
+	// TODO(idlgen): field bin_liquidity_dist of type kind vec is not handled
+	return nil
+}
+
+// UnmarshalWithDecoder reads LiquidityParameter in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LiquidityParameter) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LiquidityParameter into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountY = uint64(v)
+	}
+	// TODO(idlgen): field bin_liquidity_dist of type kind vec is not handled
+	return nil
+}
+
+// UnmarshalWithDecoder reads LiquidityParameterByStrategy in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LiquidityParameterByStrategy) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LiquidityParameterByStrategy into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountY = uint64(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxActiveBinSlippage = int32(v)
+	}
+	if err := m.StrategyParameters.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	return nil
+}
+
+// PayloadSizeLiquidityParameterByStrategy is the Borsh payload size of LiquidityParameterByStrategy, excluding the
+// 8-byte account discriminator.
+const PayloadSizeLiquidityParameterByStrategy = 97
+
+// UnmarshalWithDecoder reads LiquidityParameterByStrategyOneSide in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LiquidityParameterByStrategyOneSide) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LiquidityParameterByStrategyOneSide into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Amount = uint64(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxActiveBinSlippage = int32(v)
+	}
+	if err := m.StrategyParameters.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	return nil
+}
+
+// PayloadSizeLiquidityParameterByStrategyOneSide is the Borsh payload size of LiquidityParameterByStrategyOneSide, excluding the
+// 8-byte account discriminator.
+const PayloadSizeLiquidityParameterByStrategyOneSide = 89
+
+// UnmarshalWithDecoder reads LiquidityParameterByWeight in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *LiquidityParameterByWeight) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode LiquidityParameterByWeight into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountY = uint64(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxActiveBinSlippage = int32(v)
+	}
+	// TODO(idlgen): field bin_liquidity_dist of type kind vec is not handled
+	return nil
+}
+
+// UnmarshalWithDecoder reads Operator in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *Operator) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode Operator into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Signer = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.Permission = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.Padding[i] = uint64(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeOperator is the Borsh payload size of Operator, excluding the
+// 8-byte account discriminator.
+const PayloadSizeOperator = 64
+
+// UnmarshalWithDecoder reads Oracle in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *Oracle) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode Oracle into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Idx = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.ActiveSize = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Length = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeOracle is the Borsh payload size of Oracle, excluding the
+// 8-byte account discriminator.
+const PayloadSizeOracle = 24
+
+// UnmarshalWithDecoder reads PlaceLimitOrderEvt in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PlaceLimitOrderEvt) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PlaceLimitOrderEvt into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Sender = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LimitOrder = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	if err := m.Params.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	return nil
+}
+
+// UnmarshalWithDecoder reads PlaceLimitOrderParams in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PlaceLimitOrderParams) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PlaceLimitOrderParams into a nil receiver")
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.IsAskSide = v
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	{
+		present, err := dec.ReadOption()
+		if err != nil {
+			return fmt.Errorf("reading option tag: %w", err)
+		}
+		m.RelativeBin.Some = present
+	}
+	// TODO(idlgen): field bins of type kind vec is not handled
+	return nil
+}
+
+// UnmarshalWithDecoder reads PositionBinData in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PositionBinData) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PositionBinData into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.LiquidityShare = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	if err := m.RewardInfo.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	if err := m.FeeInfo.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	return nil
+}
+
+// PayloadSizePositionBinData is the Borsh payload size of PositionBinData, excluding the
+// 8-byte account discriminator.
+const PayloadSizePositionBinData = 112
+
+// UnmarshalWithDecoder reads PositionClose in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PositionClose) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PositionClose into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	return nil
+}
+
+// PayloadSizePositionClose is the Borsh payload size of PositionClose, excluding the
+// 8-byte account discriminator.
+const PayloadSizePositionClose = 64
+
+// UnmarshalWithDecoder reads PositionCreate in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PositionCreate) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PositionCreate into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	return nil
+}
+
+// PayloadSizePositionCreate is the Borsh payload size of PositionCreate, excluding the
+// 8-byte account discriminator.
+const PayloadSizePositionCreate = 96
+
+// UnmarshalWithDecoder reads PositionV2 in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PositionV2) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PositionV2 into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.LiquidityShares {
+		{
+			v, err := dec.ReadUint128(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u128: %w", err)
+			}
+			m.LiquidityShares[i] = num.U128{Lo: v.Lo, Hi: v.Hi}
+		}
+	}
+	for i := range m.RewardInfos {
+		if err := m.RewardInfos[i].UnmarshalWithDecoder(dec); err != nil {
+			return err
+		}
+	}
+	for i := range m.FeeInfos {
+		if err := m.FeeInfos[i].UnmarshalWithDecoder(dec); err != nil {
+			return err
+		}
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.LowerBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.UpperBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i64: %w", err)
+		}
+		m.LastUpdatedAt = int64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.TotalClaimedFeeXAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.TotalClaimedFeeYAmount = uint64(v)
+	}
+	for i := range m.TotalClaimedRewards {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.TotalClaimedRewards[i] = uint64(v)
+		}
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Operator = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.LockReleasePoint = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Padding0 = uint8(v)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.FeeOwner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Version = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.PermissionlessOperationBits = uint8(v)
+	}
+	for i := range m.Reserved {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Reserved[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizePositionV2 is the Borsh payload size of PositionV2, excluding the
+// 8-byte account discriminator.
+const PayloadSizePositionV2 = 8112
+
+// UnmarshalWithDecoder reads PresetParameter in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PresetParameter) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PresetParameter into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinStep = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.FilterPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DecayPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ReductionFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VariableFeeControl = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.MaxVolatilityAccumulator = uint32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MinBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ProtocolShare = uint16(v)
+	}
+	return nil
+}
+
+// PayloadSizePresetParameter is the Borsh payload size of PresetParameter, excluding the
+// 8-byte account discriminator.
+const PayloadSizePresetParameter = 28
+
+// UnmarshalWithDecoder reads PresetParameter2 in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *PresetParameter2) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode PresetParameter2 into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BinStep = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.FilterPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DecayPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VariableFeeControl = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.MaxVolatilityAccumulator = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ReductionFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ProtocolShare = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.Index = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BaseFeePowerFactor = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ConcreteFunctionType = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.CollectFeeMode = uint8(v)
+	}
+	for i := range m.Padding0 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding0[i] = uint8(v)
+		}
+	}
+	for i := range m.Padding1 {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.Padding1[i] = uint64(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizePresetParameter2 is the Borsh payload size of PresetParameter2, excluding the
+// 8-byte account discriminator.
+const PayloadSizePresetParameter2 = 184
+
+// UnmarshalWithDecoder reads ProtocolFee in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *ProtocolFee) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode ProtocolFee into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountX = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountY = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeProtocolFee is the Borsh payload size of ProtocolFee, excluding the
+// 8-byte account discriminator.
+const PayloadSizeProtocolFee = 16
+
+// UnmarshalWithDecoder reads RebalanceLiquidityParams in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *RebalanceLiquidityParams) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode RebalanceLiquidityParams into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.MaxActiveBinSlippage = uint16(v)
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.ShouldClaimFee = v
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.ShouldClaimReward = v
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.MinWithdrawXAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.MaxDepositXAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.MinWithdrawYAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.MaxDepositYAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.ShrinkMode = uint8(v)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	// TODO(idlgen): field removes of type kind vec is not handled
+	// TODO(idlgen): field adds of type kind vec is not handled
+	return nil
+}
+
+// UnmarshalWithDecoder reads Rebalancing in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *Rebalancing) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode Rebalancing into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.XWithdrawnAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.XAddedAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.YWithdrawnAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.YAddedAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.XFeeAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.YFeeAmount = uint64(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.OldMinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.OldMaxId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.NewMinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.NewMaxId = int32(v)
+	}
+	for i := range m.Rewards {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.Rewards[i] = uint64(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeRebalancing is the Borsh payload size of Rebalancing, excluding the
+// 8-byte account discriminator.
+const PayloadSizeRebalancing = 180
+
+// UnmarshalWithDecoder reads RelativeBin in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *RelativeBin) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode RelativeBin into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxActiveBinSlippage = int32(v)
+	}
+	return nil
+}
+
+// PayloadSizeRelativeBin is the Borsh payload size of RelativeBin, excluding the
+// 8-byte account discriminator.
+const PayloadSizeRelativeBin = 8
+
+// UnmarshalWithDecoder reads RemainingAccountsInfo in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *RemainingAccountsInfo) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode RemainingAccountsInfo into a nil receiver")
+	}
+	// TODO(idlgen): field slices of type kind vec is not handled
+	return nil
+}
+
+// UnmarshalWithDecoder reads RemainingAccountsSlice in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *RemainingAccountsSlice) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode RemainingAccountsSlice into a nil receiver")
+	}
+	if err := m.AccountsType.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.Length = uint8(v)
+	}
+	return nil
+}
+
+// UnmarshalWithDecoder reads RemoveLiquidity in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *RemoveLiquidity) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode RemoveLiquidity into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.From = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.Amounts {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.Amounts[i] = uint64(v)
+		}
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.ActiveBinId = int32(v)
+	}
+	return nil
+}
+
+// PayloadSizeRemoveLiquidity is the Borsh payload size of RemoveLiquidity, excluding the
+// 8-byte account discriminator.
+const PayloadSizeRemoveLiquidity = 116
+
+// UnmarshalWithDecoder reads RemoveLiquidityParams in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *RemoveLiquidityParams) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode RemoveLiquidityParams into a nil receiver")
+	}
+	{
+		present, err := dec.ReadOption()
+		if err != nil {
+			return fmt.Errorf("reading option tag: %w", err)
+		}
+		m.MinBinId.Some = present
+	}
+	{
+		present, err := dec.ReadOption()
+		if err != nil {
+			return fmt.Errorf("reading option tag: %w", err)
+		}
+		m.MaxBinId.Some = present
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.Bps = uint16(v)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeRemoveLiquidityParams is the Borsh payload size of RemoveLiquidityParams, excluding the
+// 8-byte account discriminator.
+const PayloadSizeRemoveLiquidityParams = 28
+
+// UnmarshalWithDecoder reads RewardInfo in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *RewardInfo) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode RewardInfo into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Mint = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Vault = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Funder = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardDuration = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardDurationEnd = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.RewardRate = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.LastUpdateTime = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.CumulativeSecondsWithEmptyLiquidityReward = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeRewardInfo is the Borsh payload size of RewardInfo, excluding the
+// 8-byte account discriminator.
+const PayloadSizeRewardInfo = 144
+
+// UnmarshalWithDecoder reads SetPositionPermissionlessOperationBitsEvt in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *SetPositionPermissionlessOperationBitsEvt) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode SetPositionPermissionlessOperationBitsEvt into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Owner = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.OldBits = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.NewBits = uint8(v)
+	}
+	return nil
+}
+
+// PayloadSizeSetPositionPermissionlessOperationBitsEvt is the Borsh payload size of SetPositionPermissionlessOperationBitsEvt, excluding the
+// 8-byte account discriminator.
+const PayloadSizeSetPositionPermissionlessOperationBitsEvt = 66
+
+// UnmarshalWithDecoder reads StaticParameters in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *StaticParameters) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode StaticParameters into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.BaseFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.FilterPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.DecayPeriod = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ReductionFactor = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VariableFeeControl = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.MaxVolatilityAccumulator = uint32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MinBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint16(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u16: %w", err)
+		}
+		m.ProtocolShare = uint16(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.BaseFeePowerFactor = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.FunctionType = uint8(v)
+	}
+	{
+		v, err := dec.ReadUint8()
+		if err != nil {
+			return fmt.Errorf("reading u8: %w", err)
+		}
+		m.CollectFeeMode = uint8(v)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeStaticParameters is the Borsh payload size of StaticParameters, excluding the
+// 8-byte account discriminator.
+const PayloadSizeStaticParameters = 32
+
+// UnmarshalWithDecoder reads StrategyParameters in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *StrategyParameters) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode StrategyParameters into a nil receiver")
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MinBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.MaxBinId = int32(v)
+	}
+	if err := m.StrategyType.UnmarshalWithDecoder(dec); err != nil {
+		return err
+	}
+	for i := range m.Parameteres {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Parameteres[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeStrategyParameters is the Borsh payload size of StrategyParameters, excluding the
+// 8-byte account discriminator.
+const PayloadSizeStrategyParameters = 73
+
+// UnmarshalWithDecoder reads Swap in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *Swap) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode Swap into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.From = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.StartBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.EndBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountIn = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountOut = uint64(v)
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.SwapForY = v
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Fee = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.ProtocolFee = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.FeeBps = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.HostFee = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeSwap is the Borsh payload size of Swap, excluding the
+// 8-byte account discriminator.
+const PayloadSizeSwap = 129
+
+// UnmarshalWithDecoder reads Swap2Evt in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *Swap2Evt) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode Swap2Evt into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.From = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.StartBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.EndBinId = int32(v)
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.SwapForY = v
+	}
+	{
+		v, err := dec.ReadUint128(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u128: %w", err)
+		}
+		m.FeeBps = num.U128{Lo: v.Lo, Hi: v.Hi}
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountIn = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountLeft = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.AmountOut = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.MmFee = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.ProtocolFee = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.LimitOrderFee = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.HostFee = uint64(v)
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.FeesOnInput = v
+	}
+	{
+		v, err := dec.ReadBool()
+		if err != nil {
+			return fmt.Errorf("reading bool: %w", err)
+		}
+		m.FeesOnTokenX = v
+	}
+	return nil
+}
+
+// PayloadSizeSwap2Evt is the Borsh payload size of Swap2Evt, excluding the
+// 8-byte account discriminator.
+const PayloadSizeSwap2Evt = 147
+
+// UnmarshalWithDecoder reads TokenBadge in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *TokenBadge) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode TokenBadge into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.TokenMint = solana.PublicKeyFromBytes(b)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeTokenBadge is the Borsh payload size of TokenBadge, excluding the
+// 8-byte account discriminator.
+const PayloadSizeTokenBadge = 160
+
+// UnmarshalWithDecoder reads UpdatePositionLockReleasePoint in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *UpdatePositionLockReleasePoint) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode UpdatePositionLockReleasePoint into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.CurrentPoint = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.NewLockReleasePoint = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.OldLockReleasePoint = uint64(v)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Sender = solana.PublicKeyFromBytes(b)
+	}
+	return nil
+}
+
+// PayloadSizeUpdatePositionLockReleasePoint is the Borsh payload size of UpdatePositionLockReleasePoint, excluding the
+// 8-byte account discriminator.
+const PayloadSizeUpdatePositionLockReleasePoint = 88
+
+// UnmarshalWithDecoder reads UpdatePositionOperator in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *UpdatePositionOperator) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode UpdatePositionOperator into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.Position = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.OldOperator = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.NewOperator = solana.PublicKeyFromBytes(b)
+	}
+	return nil
+}
+
+// PayloadSizeUpdatePositionOperator is the Borsh payload size of UpdatePositionOperator, excluding the
+// 8-byte account discriminator.
+const PayloadSizeUpdatePositionOperator = 96
+
+// UnmarshalWithDecoder reads UpdateRewardDuration in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *UpdateRewardDuration) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode UpdateRewardDuration into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardIndex = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.OldRewardDuration = uint64(v)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.NewRewardDuration = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeUpdateRewardDuration is the Borsh payload size of UpdateRewardDuration, excluding the
+// 8-byte account discriminator.
+const PayloadSizeUpdateRewardDuration = 56
+
+// UnmarshalWithDecoder reads UpdateRewardFunder in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *UpdateRewardFunder) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode UpdateRewardFunder into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.RewardIndex = uint64(v)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.OldFunder = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.NewFunder = solana.PublicKeyFromBytes(b)
+	}
+	return nil
+}
+
+// PayloadSizeUpdateRewardFunder is the Borsh payload size of UpdateRewardFunder, excluding the
+// 8-byte account discriminator.
+const PayloadSizeUpdateRewardFunder = 104
+
+// UnmarshalWithDecoder reads UserRewardInfo in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *UserRewardInfo) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode UserRewardInfo into a nil receiver")
+	}
+	for i := range m.RewardPerTokenCompletes {
+		{
+			v, err := dec.ReadUint128(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u128: %w", err)
+			}
+			m.RewardPerTokenCompletes[i] = num.U128{Lo: v.Lo, Hi: v.Hi}
+		}
+	}
+	for i := range m.RewardPendings {
+		{
+			v, err := dec.ReadUint64(binary.LittleEndian)
+			if err != nil {
+				return fmt.Errorf("reading u64: %w", err)
+			}
+			m.RewardPendings[i] = uint64(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeUserRewardInfo is the Borsh payload size of UserRewardInfo, excluding the
+// 8-byte account discriminator.
+const PayloadSizeUserRewardInfo = 48
+
+// UnmarshalWithDecoder reads VariableParameters in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *VariableParameters) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode VariableParameters into a nil receiver")
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VolatilityAccumulator = uint32(v)
+	}
+	{
+		v, err := dec.ReadUint32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u32: %w", err)
+		}
+		m.VolatilityReference = uint32(v)
+	}
+	{
+		v, err := dec.ReadInt32(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i32: %w", err)
+		}
+		m.IndexReference = int32(v)
+	}
+	for i := range m.Padding {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding[i] = uint8(v)
+		}
+	}
+	{
+		v, err := dec.ReadInt64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading i64: %w", err)
+		}
+		m.LastUpdateTimestamp = int64(v)
+	}
+	for i := range m.Padding1 {
+		{
+			v, err := dec.ReadUint8()
+			if err != nil {
+				return fmt.Errorf("reading u8: %w", err)
+			}
+			m.Padding1[i] = uint8(v)
+		}
+	}
+	return nil
+}
+
+// PayloadSizeVariableParameters is the Borsh payload size of VariableParameters, excluding the
+// 8-byte account discriminator.
+const PayloadSizeVariableParameters = 32
+
+// UnmarshalWithDecoder reads WithdrawIneligibleReward in Borsh form.
+// It reads the account payload, without the 8-byte discriminator: callers
+// check the discriminator before calling it, because a decoder that silently
+// accepted another program's account would read unrelated bytes as state.
+func (m *WithdrawIneligibleReward) UnmarshalWithDecoder(dec *bin.Decoder) error {
+	if m == nil {
+		return fmt.Errorf("lbclmm: cannot decode WithdrawIneligibleReward into a nil receiver")
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.LbPair = solana.PublicKeyFromBytes(b)
+	}
+	{
+		b, err := dec.ReadNBytes(32)
+		if err != nil {
+			return fmt.Errorf("reading pubkey: %w", err)
+		}
+		m.RewardMint = solana.PublicKeyFromBytes(b)
+	}
+	{
+		v, err := dec.ReadUint64(binary.LittleEndian)
+		if err != nil {
+			return fmt.Errorf("reading u64: %w", err)
+		}
+		m.Amount = uint64(v)
+	}
+	return nil
+}
+
+// PayloadSizeWithdrawIneligibleReward is the Borsh payload size of WithdrawIneligibleReward, excluding the
+// 8-byte account discriminator.
+const PayloadSizeWithdrawIneligibleReward = 72

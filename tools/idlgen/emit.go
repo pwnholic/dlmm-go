@@ -73,8 +73,16 @@ func (g *typeGraph) generate(outDir, idlPath string) ([]string, error) {
 	var written []string
 
 	var buf bytes.Buffer
-	g.writeHeader(&buf, idlPath, true)
+	g.writeHeader(&buf, idlPath, impBinary, impFmt, impBin, impSolana, impNum)
 	g.writeTypeDecls(&buf)
+	for i := range g.order {
+		name := g.order[i]
+		info := g.types[name]
+		if info.isEnum {
+			continue
+		}
+		g.emitDecode(&buf, name, info)
+	}
 	path := filepath.Join(outDir, "types_gen.go")
 	if err := writeGoFile(path, buf.Bytes()); err != nil {
 		return nil, err
@@ -82,7 +90,7 @@ func (g *typeGraph) generate(outDir, idlPath string) ([]string, error) {
 	written = append(written, path)
 
 	buf.Reset()
-	g.writeHeader(&buf, idlPath, false)
+	g.writeHeader(&buf, idlPath, impFmt, impBin)
 	g.writeEnums(&buf)
 	path = filepath.Join(outDir, "enums_gen.go")
 	if err := writeGoFile(path, buf.Bytes()); err != nil {
@@ -93,9 +101,24 @@ func (g *typeGraph) generate(outDir, idlPath string) ([]string, error) {
 	// Option is its own file because both the type and enum files reference it,
 	// and Go has no cross-file private types.
 	buf.Reset()
-	g.writeHeader(&buf, idlPath, false)
+	g.writeHeader(&buf, idlPath)
 	g.writeOption(&buf)
 	path = filepath.Join(outDir, "option_gen.go")
+	if err := writeGoFile(path, buf.Bytes()); err != nil {
+		return nil, err
+	}
+	written = append(written, path)
+
+	// Decoders for the twelve accounts. Only accounts get a decoder: every one of
+	// them is fixed-size and has no vec or option in its payload, whereas the
+	// instruction and event types are variable-length and are handled with the
+	// instructions rather than here.
+	buf.Reset()
+	g.writeHeader(&buf, idlPath, impFmt, impSlices, impBin)
+	if err := g.writeAccountDecoders(&buf); err != nil {
+		return nil, err
+	}
+	path = filepath.Join(outDir, "decode_gen.go")
 	if err := writeGoFile(path, buf.Bytes()); err != nil {
 		return nil, err
 	}
@@ -104,19 +127,121 @@ func (g *typeGraph) generate(outDir, idlPath string) ([]string, error) {
 	return written, nil
 }
 
-// writeHeader emits the generated-file banner, the package clause, and the
-// imports the emitted declarations need. Only the types file pulls in solana and
-// num, so the enum file stays dependency-free.
-func (g *typeGraph) writeHeader(buf *bytes.Buffer, idlPath string, needDeps bool) {
+// writeAccountDecoders emits DecodeX helpers for the twelve IDL accounts.
+//
+// DecodeX takes the full account data, checks the discriminator, then reads the
+// payload. Requiring the discriminator is the point: without it a decoder would
+// happily interpret any account's bytes as pool state.
+func (g *typeGraph) writeAccountDecoders(buf *bytes.Buffer) error {
+	for _, acc := range g.idl.Accounts {
+		info, ok := g.types[acc.Name]
+		if !ok {
+			return fmt.Errorf("account %s has no matching type", acc.Name)
+		}
+		if info.isEnum {
+			return fmt.Errorf("account %s is an enum, which cannot be an account", acc.Name)
+		}
+		if info.size <= 0 {
+			return fmt.Errorf("account %s is not fixed-size; an account decoder must be static", acc.Name)
+		}
+
+		goName := goTypeName(acc.Name)
+
+		// DummyZcAccount is zero-copy: it carries no Anchor discriminator, so a
+		// length check is its only prefix validation.
+		zeroCopy := acc.Name == "DummyZcAccount"
+
+		fmt.Fprintf(buf, "// Decode%s reads a %s account from raw account data.\n", goName, acc.Name)
+		if zeroCopy {
+			fmt.Fprintf(buf, "// %s is a zero-copy account and carries no discriminator, so only its\n", acc.Name)
+			fmt.Fprintf(buf, "// length is validated.\n")
+		} else {
+			fmt.Fprintf(buf, "// The data must begin with the %s discriminator.\n", acc.Name)
+		}
+		fmt.Fprintf(buf, "func Decode%s(data []byte) (*%s, error) {\n", goName, goName)
+
+		prefix := 0
+		if !zeroCopy {
+			prefix = 8
+			fmt.Fprintf(buf, "\tif len(data) < AccountDiscriminatorLen {\n")
+			fmt.Fprintf(buf, "\t\treturn nil, fmt.Errorf(\"lbclmm: %%s needs at least %%d bytes, got %%d\", %q, AccountDiscriminatorLen, len(data))\n", acc.Name)
+			fmt.Fprintf(buf, "\t}\n")
+			fmt.Fprintf(buf, "\tif !slices.Equal(data[:AccountDiscriminatorLen], Discriminator%s[:]) {\n", goName)
+			fmt.Fprintf(buf, "\t\treturn nil, fmt.Errorf(\"lbclmm: %%s discriminator mismatch\", %q)\n", acc.Name)
+			fmt.Fprintf(buf, "\t}\n")
+		}
+
+		fmt.Fprintf(buf, "\twant := %d\n", prefix+info.size)
+		fmt.Fprintf(buf, "\tif len(data) < want {\n")
+		fmt.Fprintf(buf, "\t\treturn nil, fmt.Errorf(\"lbclmm: %%s needs %%d bytes, got %%d\", %q, want, len(data))\n", acc.Name)
+		fmt.Fprintf(buf, "\t}\n")
+
+		fmt.Fprintf(buf, "\tvar out %s\n", goName)
+		fmt.Fprintf(buf, "\tdec := bin.NewBorshDecoder(data[%d:])\n", prefix)
+		fmt.Fprintf(buf, "\tif err := out.UnmarshalWithDecoder(dec); err != nil {\n")
+		fmt.Fprintf(buf, "\t\treturn nil, fmt.Errorf(\"lbclmm: decoding %%s: %%w\", %q, err)\n", acc.Name)
+		fmt.Fprintf(buf, "\t}\n")
+		fmt.Fprintf(buf, "\treturn &out, nil\n")
+		fmt.Fprintf(buf, "}\n\n")
+	}
+
+	return nil
+}
+
+// importSpec is one generated-file import. Each file declares exactly the
+// imports it uses: a shared superset would leave unused imports in three of the
+// four files, and Go treats an unused import as an error.
+type importSpec struct {
+	path  string
+	alias string
+}
+
+var (
+	impBinary = importSpec{path: "encoding/binary"}
+	impErrors = importSpec{path: "errors"}
+	impFmt    = importSpec{path: "fmt"}
+	impSlices = importSpec{path: "slices"}
+	impBin    = importSpec{path: "github.com/gagliardetto/binary", alias: "bin"}
+	impSolana = importSpec{path: "github.com/gagliardetto/solana-go", alias: "solana"}
+	impNum    = importSpec{path: "github.com/pwnholic/dlmm-go/num"}
+)
+
+// writeHeader emits the generated-file banner, the package clause, and exactly
+// the imports the file needs.
+func (g *typeGraph) writeHeader(buf *bytes.Buffer, idlPath string, imports ...importSpec) {
 	fmt.Fprintf(buf, "// Code generated by tools/idlgen from %s. DO NOT EDIT.\n\n", idlPath)
 	fmt.Fprintf(buf, "package lbclmm\n\n")
 
-	if needDeps {
-		fmt.Fprintf(buf, "import (\n")
-		fmt.Fprintf(buf, "\tsolana \"github.com/gagliardetto/solana-go\"\n")
+	if len(imports) == 0 {
+		return
+	}
+
+	// Group stdlib before external, as gofmt would.
+	std, ext := make([]importSpec, 0, len(imports)), make([]importSpec, 0, len(imports))
+	for _, im := range imports {
+		if strings.Contains(im.path, ".") && !strings.HasPrefix(im.path, "golang.org/") {
+			ext = append(ext, im)
+			continue
+		}
+		std = append(std, im)
+	}
+
+	fmt.Fprintf(buf, "import (\n")
+	writeImports(buf, std)
+	if len(std) > 0 && len(ext) > 0 {
 		fmt.Fprintf(buf, "\n")
-		fmt.Fprintf(buf, "\t\"github.com/pwnholic/dlmm-go/num\"\n")
-		fmt.Fprintf(buf, ")\n\n")
+	}
+	writeImports(buf, ext)
+	fmt.Fprintf(buf, ")\n\n")
+}
+
+func writeImports(buf *bytes.Buffer, specs []importSpec) {
+	for _, im := range specs {
+		if im.alias != "" {
+			fmt.Fprintf(buf, "\t%s %q\n", im.alias, im.path)
+			continue
+		}
+		fmt.Fprintf(buf, "\t%q\n", im.path)
 	}
 }
 
@@ -204,6 +329,27 @@ func (g *typeGraph) writeEnums(buf *bytes.Buffer) {
 			fmt.Fprintf(buf, "\n")
 		}
 		fmt.Fprintf(buf, ")\n\n")
+
+		// A decoder so an enum used as a struct field reads like any other type.
+		// The discriminant is one byte whose value is the IDL declaration index.
+		// An out-of-range value is rejected rather than accepted as zero: an
+		// unrecognised variant means the decoder does not match the program, and
+		// silently decoding it as the first variant would misreport pool state.
+		fmt.Fprintf(buf, "// UnmarshalWithDecoder reads the one-byte discriminant.\n")
+		fmt.Fprintf(buf, "func (e *%s) UnmarshalWithDecoder(dec *bin.Decoder) error {\n", goTypeName(name))
+		fmt.Fprintf(buf, "\tif e == nil {\n")
+		fmt.Fprintf(buf, "\t\treturn fmt.Errorf(\"lbclmm: cannot decode %s into a nil receiver\")\n", goTypeName(name))
+		fmt.Fprintf(buf, "\t}\n")
+		fmt.Fprintf(buf, "\tv, err := dec.ReadUint8()\n")
+		fmt.Fprintf(buf, "\tif err != nil {\n")
+		fmt.Fprintf(buf, "\t\treturn fmt.Errorf(\"reading %s: %%w\", err)\n", name)
+		fmt.Fprintf(buf, "\t}\n")
+		fmt.Fprintf(buf, "\tif v >= %d {\n", len(info.variants))
+		fmt.Fprintf(buf, "\t\treturn fmt.Errorf(\"lbclmm: %s has %%d variants, got %%d\", %d, v)\n", name, len(info.variants))
+		fmt.Fprintf(buf, "\t}\n")
+		fmt.Fprintf(buf, "\t*e = %s(v)\n", goTypeName(name))
+		fmt.Fprintf(buf, "\treturn nil\n")
+		fmt.Fprintf(buf, "}\n\n")
 	}
 }
 
