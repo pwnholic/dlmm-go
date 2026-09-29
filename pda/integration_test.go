@@ -101,14 +101,6 @@ func mustKey(t *testing.T, s string) solana.PublicKey {
 	return k
 }
 
-// dataAt reads one byte for diagnostics, returning 0 when out of range.
-func dataAt(data []byte, off int) byte {
-	if off < 0 || off >= len(data) {
-		return 0
-	}
-	return data[off]
-}
-
 // TestDerivedAddressesMatchRealPools checks three derivations against the chain.
 //
 // What each part can and cannot prove:
@@ -185,34 +177,29 @@ func TestDerivedAddressesMatchRealPools(t *testing.T) {
 			}
 			discChecked++
 
-			// base_factor is the first u16 after the discriminator, because
-			// StaticParameters.base_factor is the first field of
-			// LbPair.parameters. If that offset were wrong the LbPairV2
-			// candidate would simply never match, which the tally shows.
-			if len(data) < lbclmm.AccountDiscriminatorLen+2 {
-				t.Fatal("pool account too short to hold base_factor")
-			}
-			baseFactor := binary.LittleEndian.Uint16(data[lbclmm.AccountDiscriminatorLen:])
-
-			// base_factor_seed is a separate field from parameters.base_factor.
-			// The live value can be changed by the operator through
-			// update_base_fee_parameters, while the seed is fixed at creation, so
-			// a pool whose base fee was updated has the two disagreeing and only
-			// the seed reproduces the address.
+			// The pool's creation seeds live in their own fields, separate from
+			// the live bin_step and parameters.base_factor, because the live
+			// values are operator-mutable (update_base_fee_parameters) while the
+			// seeds are fixed at creation. Reading the live values is what made
+			// several real pools fail to reproduce.
 			//
-			// Offset 92 is computed from the IDL field order: StaticParameters
-			// (40 bytes) + VariableParameters (32) + bump_seed (1) +
-			// bin_step_seed (2) + pair_type (1) + active_id (4) + bin_step (2) +
-			// status (1) + require_base_factor_seed (1), all after the 8-byte
-			// discriminator. The diagnostic log prints both readings so a wrong
-			// offset is visible rather than silent.
-			const baseFactorSeedOffset = 92
-			var baseFactorSeed uint16
-			if len(data) >= baseFactorSeedOffset+2 {
-				baseFactorSeed = binary.LittleEndian.Uint16(data[baseFactorSeedOffset:])
+			// Offsets come from walking the IDL field tree with Borsh
+			// accumulation: the nested StaticParameters is 32 bytes and
+			// VariableParameters is 32 bytes, which puts bin_step_seed at 73 and
+			// base_factor_seed at 84. (An earlier hand-computation placed them at
+			// 92 and got five pools wrong; see DECISIONS.md I14.)
+			const (
+				binStepSeedOffset    = 73
+				baseFactorSeedOffset = 84
+			)
+			if len(data) < baseFactorSeedOffset+2 {
+				t.Fatal("pool account too short to hold the creation seeds")
 			}
-			t.Logf("base_factor live=%d seed=%d require_seed=%d",
-				baseFactor, baseFactorSeed, dataAt(data, 91))
+			binStepSeed := binary.LittleEndian.Uint16(data[binStepSeedOffset:])
+			baseFactorSeed := binary.LittleEndian.Uint16(data[baseFactorSeedOffset:])
+			liveBaseFactor := binary.LittleEndian.Uint16(data[lbclmm.AccountDiscriminatorLen:])
+			t.Logf("bin_step_seed=%d base_factor_seed=%d | live bin_step=%d base_factor=%d",
+				binStepSeed, baseFactorSeed, p.PoolConfig.BinStep, liveBaseFactor)
 
 			// 3. Try every seed set a permissionless pool can use.
 			candidates := []struct {
@@ -220,13 +207,13 @@ func TestDerivedAddressesMatchRealPools(t *testing.T) {
 				fn   func() (solana.PublicKey, uint8, error)
 			}{
 				{"LbPair", func() (solana.PublicKey, uint8, error) {
-					return pda.LbPair(lbclmm.ProgramIDMainnet, mintX, mintY, p.PoolConfig.BinStep)
+					return pda.LbPair(lbclmm.ProgramIDMainnet, mintX, mintY, binStepSeed)
 				}},
-				{"LbPairV2", func() (solana.PublicKey, uint8, error) {
-					return pda.LbPairV2(lbclmm.ProgramIDMainnet, mintX, mintY, p.PoolConfig.BinStep, baseFactor)
+				{"LbPairV2(live base_factor)", func() (solana.PublicKey, uint8, error) {
+					return pda.LbPairV2(lbclmm.ProgramIDMainnet, mintX, mintY, binStepSeed, liveBaseFactor)
 				}},
-				{"LbPairV2(base_factor_seed)", func() (solana.PublicKey, uint8, error) {
-					return pda.LbPairV2(lbclmm.ProgramIDMainnet, mintX, mintY, p.PoolConfig.BinStep, baseFactorSeed)
+				{"LbPairV2(creation seeds)", func() (solana.PublicKey, uint8, error) {
+					return pda.LbPairV2(lbclmm.ProgramIDMainnet, mintX, mintY, binStepSeed, baseFactorSeed)
 				}},
 				{"CustomizablePermissionlessLbPair", func() (solana.PublicKey, uint8, error) {
 					return pda.CustomizablePermissionlessLbPair(lbclmm.ProgramIDMainnet, mintX, mintY)
@@ -241,20 +228,18 @@ func TestDerivedAddressesMatchRealPools(t *testing.T) {
 				}
 				if addr == pool {
 					matched[c.name]++
-					t.Logf("reproduced by %s (bin_step %d, base_factor %d)",
-						c.name, p.PoolConfig.BinStep, baseFactor)
+					t.Logf("reproduced by %s", c.name)
 					return
 				}
 				derived = append(derived, c.name+" -> "+addr.String())
 			}
 
 			unmatched = append(unmatched, pool.String())
-			t.Logf("not reproduced %s (bin_step %d, base_factor %d):\n    %s",
-				pool, p.PoolConfig.BinStep, baseFactor, strings.Join(derived, "\n    "))
+			t.Logf("not reproduced %s:\n    %s", pool, strings.Join(derived, "\n    "))
 		})
 	}
 
-	for _, name := range []string{"LbPair", "LbPairV2", "LbPairV2(base_factor_seed)", "CustomizablePermissionlessLbPair"} {
+	for _, name := range []string{"LbPair", "LbPairV2(live base_factor)", "LbPairV2(creation seeds)", "CustomizablePermissionlessLbPair"} {
 		t.Logf("reproduced by %-32s %d", name, matched[name])
 	}
 	t.Logf("pools %d | reserves checked %d | discriminators confirmed %d | unmatched %d",
