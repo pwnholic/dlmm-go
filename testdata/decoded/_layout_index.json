@@ -1,0 +1,211 @@
+{
+  "idl": "idls/dlmm.json",
+  "idl_address": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+  "encoding": "borsh packed, little-endian, fields in declaration order, 8-byte anchor discriminator prefix",
+  "accounts": [
+    {
+      "account": "BinArray",
+      "discriminator": [
+        92,
+        142,
+        92,
+        220,
+        5,
+        148,
+        70,
+        181
+      ],
+      "struct_size": 10128,
+      "account_size": 10136,
+      "has_fixture": true,
+      "fixture_count": 6
+    },
+    {
+      "account": "BinArrayBitmapExtension",
+      "discriminator": [
+        80,
+        111,
+        124,
+        113,
+        55,
+        237,
+        18,
+        5
+      ],
+      "struct_size": 1568,
+      "account_size": 1576,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "ClaimFeeOperator",
+      "discriminator": [
+        166,
+        48,
+        134,
+        86,
+        34,
+        200,
+        188,
+        150
+      ],
+      "struct_size": 160,
+      "account_size": 168,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "DummyZcAccount",
+      "discriminator": [
+        94,
+        107,
+        238,
+        80,
+        208,
+        48,
+        180,
+        8
+      ],
+      "struct_size": 144,
+      "account_size": 152,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "LbPair",
+      "discriminator": [
+        33,
+        11,
+        49,
+        98,
+        181,
+        101,
+        177,
+        13
+      ],
+      "struct_size": 896,
+      "account_size": 904,
+      "has_fixture": true,
+      "fixture_count": 3
+    },
+    {
+      "account": "LimitOrder",
+      "discriminator": [
+        137,
+        183,
+        212,
+        91,
+        115,
+        29,
+        141,
+        227
+      ],
+      "struct_size": 112,
+      "account_size": 120,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "Operator",
+      "discriminator": [
+        219,
+        31,
+        188,
+        145,
+        69,
+        139,
+        204,
+        117
+      ],
+      "struct_size": 64,
+      "account_size": 72,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "Oracle",
+      "discriminator": [
+        139,
+        194,
+        131,
+        179,
+        140,
+        179,
+        229,
+        244
+      ],
+      "struct_size": 24,
+      "account_size": 32,
+      "has_fixture": true,
+      "fixture_count": 3
+    },
+    {
+      "account": "PositionV2",
+      "discriminator": [
+        117,
+        176,
+        212,
+        199,
+        245,
+        180,
+        133,
+        182
+      ],
+      "struct_size": 8112,
+      "account_size": 8120,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "PresetParameter",
+      "discriminator": [
+        242,
+        62,
+        244,
+        34,
+        181,
+        112,
+        58,
+        170
+      ],
+      "struct_size": 28,
+      "account_size": 36,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "PresetParameter2",
+      "discriminator": [
+        171,
+        236,
+        148,
+        115,
+        162,
+        113,
+        222,
+        174
+      ],
+      "struct_size": 184,
+      "account_size": 192,
+      "has_fixture": false,
+      "fixture_count": 0
+    },
+    {
+      "account": "TokenBadge",
+      "discriminator": [
+        116,
+        219,
+        204,
+        229,
+        249,
+        116,
+        255,
+        150
+      ],
+      "struct_size": 160,
+      "account_size": 168,
+      "has_fixture": false,
+      "fixture_count": 0
+    }
+  ]
+}

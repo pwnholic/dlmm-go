@@ -1,0 +1,147 @@
+{
+  "account": "Oracle",
+  "discriminator": [
+    139,
+    194,
+    131,
+    179,
+    140,
+    179,
+    229,
+    244
+  ],
+  "vector_count": 3,
+  "layout": {
+    "account": "Oracle",
+    "discriminator": [
+      139,
+      194,
+      131,
+      179,
+      140,
+      179,
+      229,
+      244
+    ],
+    "struct_size": 24,
+    "account_size": 32,
+    "has_fixture": true,
+    "fixture_count": 3
+  },
+  "vectors": [
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/9t3EyC9FweyL7PBWvKz3mrXg8B9fwFc9SK3QxM4ENqhd/oracle.bin",
+      "account": "Oracle",
+      "discriminator": [
+        139,
+        194,
+        131,
+        179,
+        140,
+        179,
+        229,
+        244
+      ],
+      "byte_length": 3232,
+      "struct_size": 24,
+      "fields": {
+        "idx": {
+          "offset": 8,
+          "bytes": 8,
+          "value": 0
+        },
+        "active_size": {
+          "offset": 16,
+          "bytes": 8,
+          "value": 0
+        },
+        "length": {
+          "offset": 24,
+          "bytes": 8,
+          "value": 100
+        }
+      },
+      "trailing": {
+        "offset": 32,
+        "length": 3200,
+        "sha256": "5a312281df4bd8dfbb4d4a94ad0bf44d01bb8cfced1206b90e21b4ca0568cdb1"
+      }
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/B5Eia4cE71tKuEDaqPHucJLG2fxySKyKzLMewd2nUvoc/oracle.bin",
+      "account": "Oracle",
+      "discriminator": [
+        139,
+        194,
+        131,
+        179,
+        140,
+        179,
+        229,
+        244
+      ],
+      "byte_length": 3232,
+      "struct_size": 24,
+      "fields": {
+        "idx": {
+          "offset": 8,
+          "bytes": 8,
+          "value": 0
+        },
+        "active_size": {
+          "offset": 16,
+          "bytes": 8,
+          "value": 0
+        },
+        "length": {
+          "offset": 24,
+          "bytes": 8,
+          "value": 100
+        }
+      },
+      "trailing": {
+        "offset": 32,
+        "length": 3200,
+        "sha256": "5a312281df4bd8dfbb4d4a94ad0bf44d01bb8cfced1206b90e21b4ca0568cdb1"
+      }
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/EtAdVRLFH22rjWh3mcUasKFF27WtHhsaCvK27tPFFWig/oracle.bin",
+      "account": "Oracle",
+      "discriminator": [
+        139,
+        194,
+        131,
+        179,
+        140,
+        179,
+        229,
+        244
+      ],
+      "byte_length": 3232,
+      "struct_size": 24,
+      "fields": {
+        "idx": {
+          "offset": 8,
+          "bytes": 8,
+          "value": 61
+        },
+        "active_size": {
+          "offset": 16,
+          "bytes": 8,
+          "value": 100
+        },
+        "length": {
+          "offset": 24,
+          "bytes": 8,
+          "value": 100
+        }
+      },
+      "trailing": {
+        "offset": 32,
+        "length": 3200,
+        "sha256": "a23ab1bfe8f82b9233b8880814d485826b0541f4eca148f09a9073d8f3065507"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1350 @@
+{
+  "account": "LbPair",
+  "discriminator": [
+    33,
+    11,
+    49,
+    98,
+    181,
+    101,
+    177,
+    13
+  ],
+  "vector_count": 3,
+  "layout": {
+    "account": "LbPair",
+    "discriminator": [
+      33,
+      11,
+      49,
+      98,
+      181,
+      101,
+      177,
+      13
+    ],
+    "struct_size": 896,
+    "account_size": 904,
+    "has_fixture": true,
+    "fixture_count": 3
+  },
+  "vectors": [
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/9t3EyC9FweyL7PBWvKz3mrXg8B9fwFc9SK3QxM4ENqhd/lb_pair.bin",
+      "account": "LbPair",
+      "discriminator": [
+        33,
+        11,
+        49,
+        98,
+        181,
+        101,
+        177,
+        13
+      ],
+      "byte_length": 904,
+      "struct_size": 896,
+      "fields": {
+        "parameters.base_factor": {
+          "offset": 8,
+          "bytes": 2,
+          "value": 10000
+        },
+        "parameters.filter_period": {
+          "offset": 10,
+          "bytes": 2,
+          "value": 10
+        },
+        "parameters.decay_period": {
+          "offset": 12,
+          "bytes": 2,
+          "value": 120
+        },
+        "parameters.reduction_factor": {
+          "offset": 14,
+          "bytes": 2,
+          "value": 5000
+        },
+        "parameters.variable_fee_control": {
+          "offset": 16,
+          "bytes": 4,
+          "value": 50000
+        },
+        "parameters.max_volatility_accumulator": {
+          "offset": 20,
+          "bytes": 4,
+          "value": 150000
+        },
+        "parameters.min_bin_id": {
+          "offset": 24,
+          "bytes": 4,
+          "value": -35163
+        },
+        "parameters.max_bin_id": {
+          "offset": 28,
+          "bytes": 4,
+          "value": 35163
+        },
+        "parameters.protocol_share": {
+          "offset": 32,
+          "bytes": 2,
+          "value": 2000
+        },
+        "parameters.base_fee_power_factor": {
+          "offset": 34,
+          "bytes": 1,
+          "value": 1
+        },
+        "parameters.function_type": {
+          "offset": 35,
+          "bytes": 1,
+          "value": 2
+        },
+        "parameters.collect_fee_mode": {
+          "offset": 36,
+          "bytes": 1,
+          "value": 1
+        },
+        "parameters._padding": {
+          "offset": 37,
+          "bytes": 3,
+          "value": "000000"
+        },
+        "v_parameters.volatility_accumulator": {
+          "offset": 40,
+          "bytes": 4,
+          "value": 0
+        },
+        "v_parameters.volatility_reference": {
+          "offset": 44,
+          "bytes": 4,
+          "value": 0
+        },
+        "v_parameters.index_reference": {
+          "offset": 48,
+          "bytes": 4,
+          "value": 0
+        },
+        "v_parameters._padding": {
+          "offset": 52,
+          "bytes": 4,
+          "value": "00000000"
+        },
+        "v_parameters.last_update_timestamp": {
+          "offset": 56,
+          "bytes": 8,
+          "value": 0
+        },
+        "v_parameters._padding_1": {
+          "offset": 64,
+          "bytes": 8,
+          "value": "0000000000000000"
+        },
+        "bump_seed": {
+          "offset": 72,
+          "bytes": 1,
+          "value": "ff"
+        },
+        "bin_step_seed": {
+          "offset": 73,
+          "bytes": 2,
+          "value": "0a00",
+          "u16le": 10
+        },
+        "pair_type": {
+          "offset": 75,
+          "bytes": 1,
+          "value": 2
+        },
+        "active_id": {
+          "offset": 76,
+          "bytes": 4,
+          "value": 0
+        },
+        "bin_step": {
+          "offset": 80,
+          "bytes": 2,
+          "value": 10
+        },
+        "status": {
+          "offset": 82,
+          "bytes": 1,
+          "value": 0
+        },
+        "require_base_factor_seed": {
+          "offset": 83,
+          "bytes": 1,
+          "value": 0
+        },
+        "base_factor_seed": {
+          "offset": 84,
+          "bytes": 2,
+          "value": "1027",
+          "u16le": 10000
+        },
+        "activation_type": {
+          "offset": 86,
+          "bytes": 1,
+          "value": 0
+        },
+        "creator_pool_on_off_control": {
+          "offset": 87,
+          "bytes": 1,
+          "value": 0
+        },
+        "token_x_mint": {
+          "offset": 88,
+          "bytes": 32,
+          "value": "BBZU4HYvY4qMGE5MbWsVxGweGBZJqGRsgH8tAEAKusNk"
+        },
+        "token_y_mint": {
+          "offset": 120,
+          "bytes": 32,
+          "value": "31iVdsS8fkURXg737XQwYhXVAuGv2vNYHjyDiURStkaU"
+        },
+        "reserve_x": {
+          "offset": 152,
+          "bytes": 32,
+          "value": "DDVpGjEz7Ay6QSyCJX5FpJhnYYYFUJ5kNdwy3ZrQP9u6"
+        },
+        "reserve_y": {
+          "offset": 184,
+          "bytes": 32,
+          "value": "9LqVUn45rtZqMmNSr7wSpJUy2Qqd6VE5q3QN7t7oJL8v"
+        },
+        "protocol_fee.amount_x": {
+          "offset": 216,
+          "bytes": 8,
+          "value": 0
+        },
+        "protocol_fee.amount_y": {
+          "offset": 224,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_1": {
+          "offset": 232,
+          "bytes": 32,
+          "value": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "reward_infos[0].mint": {
+          "offset": 264,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].vault": {
+          "offset": 296,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].funder": {
+          "offset": 328,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].reward_duration": {
+          "offset": 360,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].reward_duration_end": {
+          "offset": 368,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].reward_rate": {
+          "offset": 376,
+          "bytes": 16,
+          "value": "0",
+          "lo": 0,
+          "hi": 0
+        },
+        "reward_infos[0].last_update_time": {
+          "offset": 392,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].cumulative_seconds_with_empty_liquidity_reward": {
+          "offset": 400,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].mint": {
+          "offset": 408,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].vault": {
+          "offset": 440,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].funder": {
+          "offset": 472,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].reward_duration": {
+          "offset": 504,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].reward_duration_end": {
+          "offset": 512,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].reward_rate": {
+          "offset": 520,
+          "bytes": 16,
+          "value": "0",
+          "lo": 0,
+          "hi": 0
+        },
+        "reward_infos[1].last_update_time": {
+          "offset": 536,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].cumulative_seconds_with_empty_liquidity_reward": {
+          "offset": 544,
+          "bytes": 8,
+          "value": 0
+        },
+        "oracle": {
+          "offset": 552,
+          "bytes": 32,
+          "value": "FviPunh9kSt1XRBdHiWd5FNdTe5MJmqGfSEQdNfHTQV4"
+        },
+        "bin_array_bitmap[0]": {
+          "offset": 584,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[1]": {
+          "offset": 592,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[2]": {
+          "offset": 600,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[3]": {
+          "offset": 608,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[4]": {
+          "offset": 616,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[5]": {
+          "offset": 624,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[6]": {
+          "offset": 632,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[7]": {
+          "offset": 640,
+          "bytes": 8,
+          "value": 9223372036854775808
+        },
+        "bin_array_bitmap[8]": {
+          "offset": 648,
+          "bytes": 8,
+          "value": 1
+        },
+        "bin_array_bitmap[9]": {
+          "offset": 656,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[10]": {
+          "offset": 664,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[11]": {
+          "offset": 672,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[12]": {
+          "offset": 680,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[13]": {
+          "offset": 688,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[14]": {
+          "offset": 696,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[15]": {
+          "offset": 704,
+          "bytes": 8,
+          "value": 0
+        },
+        "last_updated_at": {
+          "offset": 712,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_2": {
+          "offset": 720,
+          "bytes": 32,
+          "value": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "pre_activation_swap_address": {
+          "offset": 752,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "base_key": {
+          "offset": 784,
+          "bytes": 32,
+          "value": "MFGQxwAmB91SwuYX36okv2Qmdc9aMuHTwWGUrp4AtB1"
+        },
+        "activation_point": {
+          "offset": 816,
+          "bytes": 8,
+          "value": 448432755
+        },
+        "pre_activation_duration": {
+          "offset": 824,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_3": {
+          "offset": 832,
+          "bytes": 8,
+          "value": "0000000000000000"
+        },
+        "_padding_4": {
+          "offset": 840,
+          "bytes": 8,
+          "value": 0
+        },
+        "creator": {
+          "offset": 848,
+          "bytes": 32,
+          "value": "FXBXnxEEfwZJA1xnyJzKEhhJXmussKXKRdq5cAh19dbC"
+        },
+        "token_mint_x_program_flag": {
+          "offset": 880,
+          "bytes": 1,
+          "value": 0
+        },
+        "token_mint_y_program_flag": {
+          "offset": 881,
+          "bytes": 1,
+          "value": 0
+        },
+        "version": {
+          "offset": 882,
+          "bytes": 1,
+          "value": 1
+        },
+        "_reserved": {
+          "offset": 883,
+          "bytes": 21,
+          "value": "000000000000000000000000000000000000000000"
+        }
+      },
+      "trailing": {
+        "offset": 904,
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/B5Eia4cE71tKuEDaqPHucJLG2fxySKyKzLMewd2nUvoc/lb_pair.bin",
+      "account": "LbPair",
+      "discriminator": [
+        33,
+        11,
+        49,
+        98,
+        181,
+        101,
+        177,
+        13
+      ],
+      "byte_length": 904,
+      "struct_size": 896,
+      "fields": {
+        "parameters.base_factor": {
+          "offset": 8,
+          "bytes": 2,
+          "value": 10000
+        },
+        "parameters.filter_period": {
+          "offset": 10,
+          "bytes": 2,
+          "value": 30
+        },
+        "parameters.decay_period": {
+          "offset": 12,
+          "bytes": 2,
+          "value": 600
+        },
+        "parameters.reduction_factor": {
+          "offset": 14,
+          "bytes": 2,
+          "value": 5000
+        },
+        "parameters.variable_fee_control": {
+          "offset": 16,
+          "bytes": 4,
+          "value": 40000
+        },
+        "parameters.max_volatility_accumulator": {
+          "offset": 20,
+          "bytes": 4,
+          "value": 350000
+        },
+        "parameters.min_bin_id": {
+          "offset": 24,
+          "bytes": 4,
+          "value": -43670
+        },
+        "parameters.max_bin_id": {
+          "offset": 28,
+          "bytes": 4,
+          "value": 43670
+        },
+        "parameters.protocol_share": {
+          "offset": 32,
+          "bytes": 2,
+          "value": 0
+        },
+        "parameters.base_fee_power_factor": {
+          "offset": 34,
+          "bytes": 1,
+          "value": 2
+        },
+        "parameters.function_type": {
+          "offset": 35,
+          "bytes": 1,
+          "value": 0
+        },
+        "parameters.collect_fee_mode": {
+          "offset": 36,
+          "bytes": 1,
+          "value": 0
+        },
+        "parameters._padding": {
+          "offset": 37,
+          "bytes": 3,
+          "value": "000000"
+        },
+        "v_parameters.volatility_accumulator": {
+          "offset": 40,
+          "bytes": 4,
+          "value": 0
+        },
+        "v_parameters.volatility_reference": {
+          "offset": 44,
+          "bytes": 4,
+          "value": 0
+        },
+        "v_parameters.index_reference": {
+          "offset": 48,
+          "bytes": 4,
+          "value": 0
+        },
+        "v_parameters._padding": {
+          "offset": 52,
+          "bytes": 4,
+          "value": "00000000"
+        },
+        "v_parameters.last_update_timestamp": {
+          "offset": 56,
+          "bytes": 8,
+          "value": 0
+        },
+        "v_parameters._padding_1": {
+          "offset": 64,
+          "bytes": 8,
+          "value": "0000000000000000"
+        },
+        "bump_seed": {
+          "offset": 72,
+          "bytes": 1,
+          "value": "fe"
+        },
+        "bin_step_seed": {
+          "offset": 73,
+          "bytes": 2,
+          "value": "0a00",
+          "u16le": 10
+        },
+        "pair_type": {
+          "offset": 75,
+          "bytes": 1,
+          "value": 3
+        },
+        "active_id": {
+          "offset": 76,
+          "bytes": 4,
+          "value": 0
+        },
+        "bin_step": {
+          "offset": 80,
+          "bytes": 2,
+          "value": 10
+        },
+        "status": {
+          "offset": 82,
+          "bytes": 1,
+          "value": 0
+        },
+        "require_base_factor_seed": {
+          "offset": 83,
+          "bytes": 1,
+          "value": 0
+        },
+        "base_factor_seed": {
+          "offset": 84,
+          "bytes": 2,
+          "value": "1027",
+          "u16le": 10000
+        },
+        "activation_type": {
+          "offset": 86,
+          "bytes": 1,
+          "value": 0
+        },
+        "creator_pool_on_off_control": {
+          "offset": 87,
+          "bytes": 1,
+          "value": 0
+        },
+        "token_x_mint": {
+          "offset": 88,
+          "bytes": 32,
+          "value": "B4rGSdcBrmLEPUQXpZa91PMsRE3GqNcjLd6EMvM3yaj2"
+        },
+        "token_y_mint": {
+          "offset": 120,
+          "bytes": 32,
+          "value": "So11111111111111111111111111111111111111112"
+        },
+        "reserve_x": {
+          "offset": 152,
+          "bytes": 32,
+          "value": "HmAJViUS3iMSzuedDs1z4QxAPitnK8oNC6dwAaNrRTBE"
+        },
+        "reserve_y": {
+          "offset": 184,
+          "bytes": 32,
+          "value": "2LAbjR3C5pWMVKh7HUWyEZ6wwubHwHB6B91vu5jaB3mr"
+        },
+        "protocol_fee.amount_x": {
+          "offset": 216,
+          "bytes": 8,
+          "value": 0
+        },
+        "protocol_fee.amount_y": {
+          "offset": 224,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_1": {
+          "offset": 232,
+          "bytes": 32,
+          "value": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "reward_infos[0].mint": {
+          "offset": 264,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].vault": {
+          "offset": 296,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].funder": {
+          "offset": 328,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].reward_duration": {
+          "offset": 360,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].reward_duration_end": {
+          "offset": 368,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].reward_rate": {
+          "offset": 376,
+          "bytes": 16,
+          "value": "0",
+          "lo": 0,
+          "hi": 0
+        },
+        "reward_infos[0].last_update_time": {
+          "offset": 392,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].cumulative_seconds_with_empty_liquidity_reward": {
+          "offset": 400,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].mint": {
+          "offset": 408,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].vault": {
+          "offset": 440,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].funder": {
+          "offset": 472,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].reward_duration": {
+          "offset": 504,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].reward_duration_end": {
+          "offset": 512,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].reward_rate": {
+          "offset": 520,
+          "bytes": 16,
+          "value": "0",
+          "lo": 0,
+          "hi": 0
+        },
+        "reward_infos[1].last_update_time": {
+          "offset": 536,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].cumulative_seconds_with_empty_liquidity_reward": {
+          "offset": 544,
+          "bytes": 8,
+          "value": 0
+        },
+        "oracle": {
+          "offset": 552,
+          "bytes": 32,
+          "value": "HeC6TwhrT9eusRp8wMWuswpMAp1eUmr4mUB5csYMPsjU"
+        },
+        "bin_array_bitmap[0]": {
+          "offset": 584,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[1]": {
+          "offset": 592,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[2]": {
+          "offset": 600,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[3]": {
+          "offset": 608,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[4]": {
+          "offset": 616,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[5]": {
+          "offset": 624,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[6]": {
+          "offset": 632,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[7]": {
+          "offset": 640,
+          "bytes": 8,
+          "value": 9223372036854775808
+        },
+        "bin_array_bitmap[8]": {
+          "offset": 648,
+          "bytes": 8,
+          "value": 1
+        },
+        "bin_array_bitmap[9]": {
+          "offset": 656,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[10]": {
+          "offset": 664,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[11]": {
+          "offset": 672,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[12]": {
+          "offset": 680,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[13]": {
+          "offset": 688,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[14]": {
+          "offset": 696,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[15]": {
+          "offset": 704,
+          "bytes": 8,
+          "value": 0
+        },
+        "last_updated_at": {
+          "offset": 712,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_2": {
+          "offset": 720,
+          "bytes": 32,
+          "value": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "pre_activation_swap_address": {
+          "offset": 752,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "base_key": {
+          "offset": 784,
+          "bytes": 32,
+          "value": "BB2atM1VveWJJUERbufE73fzZAss74J6DcEx1jGdTvwg"
+        },
+        "activation_point": {
+          "offset": 816,
+          "bytes": 8,
+          "value": 0
+        },
+        "pre_activation_duration": {
+          "offset": 824,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_3": {
+          "offset": 832,
+          "bytes": 8,
+          "value": "0000000000000000"
+        },
+        "_padding_4": {
+          "offset": 840,
+          "bytes": 8,
+          "value": 0
+        },
+        "creator": {
+          "offset": 848,
+          "bytes": 32,
+          "value": "5unTfT2kssBuNvHPY6LbJfJpLqEcdMxGYLWHwShaeTLi"
+        },
+        "token_mint_x_program_flag": {
+          "offset": 880,
+          "bytes": 1,
+          "value": 1
+        },
+        "token_mint_y_program_flag": {
+          "offset": 881,
+          "bytes": 1,
+          "value": 0
+        },
+        "version": {
+          "offset": 882,
+          "bytes": 1,
+          "value": 0
+        },
+        "_reserved": {
+          "offset": 883,
+          "bytes": 21,
+          "value": "000000000000000000000000000000000000000000"
+        }
+      },
+      "trailing": {
+        "offset": 904,
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/EtAdVRLFH22rjWh3mcUasKFF27WtHhsaCvK27tPFFWig/lb_pair.bin",
+      "account": "LbPair",
+      "discriminator": [
+        33,
+        11,
+        49,
+        98,
+        181,
+        101,
+        177,
+        13
+      ],
+      "byte_length": 904,
+      "struct_size": 896,
+      "fields": {
+        "parameters.base_factor": {
+          "offset": 8,
+          "bytes": 2,
+          "value": 4000
+        },
+        "parameters.filter_period": {
+          "offset": 10,
+          "bytes": 2,
+          "value": 300
+        },
+        "parameters.decay_period": {
+          "offset": 12,
+          "bytes": 2,
+          "value": 1200
+        },
+        "parameters.reduction_factor": {
+          "offset": 14,
+          "bytes": 2,
+          "value": 5000
+        },
+        "parameters.variable_fee_control": {
+          "offset": 16,
+          "bytes": 4,
+          "value": 7500
+        },
+        "parameters.max_volatility_accumulator": {
+          "offset": 20,
+          "bytes": 4,
+          "value": 150000
+        },
+        "parameters.min_bin_id": {
+          "offset": 24,
+          "bytes": 4,
+          "value": -1768
+        },
+        "parameters.max_bin_id": {
+          "offset": 28,
+          "bytes": 4,
+          "value": 1768
+        },
+        "parameters.protocol_share": {
+          "offset": 32,
+          "bytes": 2,
+          "value": 0
+        },
+        "parameters.base_fee_power_factor": {
+          "offset": 34,
+          "bytes": 1,
+          "value": 0
+        },
+        "parameters.function_type": {
+          "offset": 35,
+          "bytes": 1,
+          "value": 0
+        },
+        "parameters.collect_fee_mode": {
+          "offset": 36,
+          "bytes": 1,
+          "value": 0
+        },
+        "parameters._padding": {
+          "offset": 37,
+          "bytes": 3,
+          "value": "000000"
+        },
+        "v_parameters.volatility_accumulator": {
+          "offset": 40,
+          "bytes": 4,
+          "value": 10000
+        },
+        "v_parameters.volatility_reference": {
+          "offset": 44,
+          "bytes": 4,
+          "value": 0
+        },
+        "v_parameters.index_reference": {
+          "offset": 48,
+          "bytes": 4,
+          "value": 16
+        },
+        "v_parameters._padding": {
+          "offset": 52,
+          "bytes": 4,
+          "value": "00000000"
+        },
+        "v_parameters.last_update_timestamp": {
+          "offset": 56,
+          "bytes": 8,
+          "value": 1734391447
+        },
+        "v_parameters._padding_1": {
+          "offset": 64,
+          "bytes": 8,
+          "value": "0000000000000000"
+        },
+        "bump_seed": {
+          "offset": 72,
+          "bytes": 1,
+          "value": "fd"
+        },
+        "bin_step_seed": {
+          "offset": 73,
+          "bytes": 2,
+          "value": "fa00",
+          "u16le": 250
+        },
+        "pair_type": {
+          "offset": 75,
+          "bytes": 1,
+          "value": 0
+        },
+        "active_id": {
+          "offset": 76,
+          "bytes": 4,
+          "value": 15
+        },
+        "bin_step": {
+          "offset": 80,
+          "bytes": 2,
+          "value": 250
+        },
+        "status": {
+          "offset": 82,
+          "bytes": 1,
+          "value": 0
+        },
+        "require_base_factor_seed": {
+          "offset": 83,
+          "bytes": 1,
+          "value": 1
+        },
+        "base_factor_seed": {
+          "offset": 84,
+          "bytes": 2,
+          "value": "a00f",
+          "u16le": 4000
+        },
+        "activation_type": {
+          "offset": 86,
+          "bytes": 1,
+          "value": 0
+        },
+        "creator_pool_on_off_control": {
+          "offset": 87,
+          "bytes": 1,
+          "value": 0
+        },
+        "token_x_mint": {
+          "offset": 88,
+          "bytes": 32,
+          "value": "Df6yfrKC8kZE3KNkrHERKzAetSxbrWeniQfyJY4Jpump"
+        },
+        "token_y_mint": {
+          "offset": 120,
+          "bytes": 32,
+          "value": "So11111111111111111111111111111111111111112"
+        },
+        "reserve_x": {
+          "offset": 152,
+          "bytes": 32,
+          "value": "BmW4cCRpJwwL8maFB1AoAuEQf96t64Eq5gUvXikZardM"
+        },
+        "reserve_y": {
+          "offset": 184,
+          "bytes": 32,
+          "value": "FDZDrPtCjmSHeq14goCxp5pCJSRekSXY3XSgGz5Rvass"
+        },
+        "protocol_fee.amount_x": {
+          "offset": 216,
+          "bytes": 8,
+          "value": 0
+        },
+        "protocol_fee.amount_y": {
+          "offset": 224,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_1": {
+          "offset": 232,
+          "bytes": 32,
+          "value": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "reward_infos[0].mint": {
+          "offset": 264,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].vault": {
+          "offset": 296,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].funder": {
+          "offset": 328,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[0].reward_duration": {
+          "offset": 360,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].reward_duration_end": {
+          "offset": 368,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].reward_rate": {
+          "offset": 376,
+          "bytes": 16,
+          "value": "0",
+          "lo": 0,
+          "hi": 0
+        },
+        "reward_infos[0].last_update_time": {
+          "offset": 392,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[0].cumulative_seconds_with_empty_liquidity_reward": {
+          "offset": 400,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].mint": {
+          "offset": 408,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].vault": {
+          "offset": 440,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].funder": {
+          "offset": 472,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "reward_infos[1].reward_duration": {
+          "offset": 504,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].reward_duration_end": {
+          "offset": 512,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].reward_rate": {
+          "offset": 520,
+          "bytes": 16,
+          "value": "0",
+          "lo": 0,
+          "hi": 0
+        },
+        "reward_infos[1].last_update_time": {
+          "offset": 536,
+          "bytes": 8,
+          "value": 0
+        },
+        "reward_infos[1].cumulative_seconds_with_empty_liquidity_reward": {
+          "offset": 544,
+          "bytes": 8,
+          "value": 0
+        },
+        "oracle": {
+          "offset": 552,
+          "bytes": 32,
+          "value": "Fnkg415DEx72GSPooKUWTbPS9wzKucQe4qnvFrrvcZK2"
+        },
+        "bin_array_bitmap[0]": {
+          "offset": 584,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[1]": {
+          "offset": 592,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[2]": {
+          "offset": 600,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[3]": {
+          "offset": 608,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[4]": {
+          "offset": 616,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[5]": {
+          "offset": 624,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[6]": {
+          "offset": 632,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[7]": {
+          "offset": 640,
+          "bytes": 8,
+          "value": 9223372036854775808
+        },
+        "bin_array_bitmap[8]": {
+          "offset": 648,
+          "bytes": 8,
+          "value": 3
+        },
+        "bin_array_bitmap[9]": {
+          "offset": 656,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[10]": {
+          "offset": 664,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[11]": {
+          "offset": 672,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[12]": {
+          "offset": 680,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[13]": {
+          "offset": 688,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[14]": {
+          "offset": 696,
+          "bytes": 8,
+          "value": 0
+        },
+        "bin_array_bitmap[15]": {
+          "offset": 704,
+          "bytes": 8,
+          "value": 0
+        },
+        "last_updated_at": {
+          "offset": 712,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_2": {
+          "offset": 720,
+          "bytes": 32,
+          "value": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "pre_activation_swap_address": {
+          "offset": 752,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "base_key": {
+          "offset": 784,
+          "bytes": 32,
+          "value": "11111111111111111111111111111111"
+        },
+        "activation_point": {
+          "offset": 816,
+          "bytes": 8,
+          "value": 0
+        },
+        "pre_activation_duration": {
+          "offset": 824,
+          "bytes": 8,
+          "value": 0
+        },
+        "_padding_3": {
+          "offset": 832,
+          "bytes": 8,
+          "value": "0000000000000000"
+        },
+        "_padding_4": {
+          "offset": 840,
+          "bytes": 8,
+          "value": 0
+        },
+        "creator": {
+          "offset": 848,
+          "bytes": 32,
+          "value": "CGk7ckUwaRhWKmyKhg2GEgSYNivQBAnatTDGFhkL59je"
+        },
+        "token_mint_x_program_flag": {
+          "offset": 880,
+          "bytes": 1,
+          "value": 0
+        },
+        "token_mint_y_program_flag": {
+          "offset": 881,
+          "bytes": 1,
+          "value": 0
+        },
+        "version": {
+          "offset": 882,
+          "bytes": 1,
+          "value": 0
+        },
+        "_reserved": {
+          "offset": 883,
+          "bytes": 21,
+          "value": "000000000000000000000000000000000000000000"
+        }
+      },
+      "trailing": {
+        "offset": 904,
+        "length": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

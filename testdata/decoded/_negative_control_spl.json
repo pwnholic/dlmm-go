@@ -1,0 +1,176 @@
+{
+  "program": "spl-token",
+  "note": "these fixtures are NOT DLMM accounts; a DLMM decoder must reject them",
+  "fixtures": [
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/9t3EyC9FweyL7PBWvKz3mrXg8B9fwFc9SK3QxM4ENqhd/reserve_x.bin",
+      "program": "spl-token",
+      "discriminator": [
+        151,
+        73,
+        99,
+        40,
+        114,
+        89,
+        25,
+        169
+      ],
+      "byte_length": 165,
+      "dlmm_discriminator_match": false,
+      "sha256": "df3d461f8f7b19419f1a57ad31f05efa289fb1a200f31351574e8fea036885bc"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/9t3EyC9FweyL7PBWvKz3mrXg8B9fwFc9SK3QxM4ENqhd/reserve_y.bin",
+      "program": "spl-token",
+      "discriminator": [
+        29,
+        230,
+        74,
+        123,
+        178,
+        69,
+        164,
+        84
+      ],
+      "byte_length": 165,
+      "dlmm_discriminator_match": false,
+      "sha256": "6c408e0497d592b16bc35087c914bb6a8268f0a3b8b5ebbfd39102f4249c8bc4"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/9t3EyC9FweyL7PBWvKz3mrXg8B9fwFc9SK3QxM4ENqhd/token_x_mint.bin",
+      "program": "spl-token",
+      "discriminator": [
+        1,
+        0,
+        0,
+        0,
+        215,
+        190,
+        242,
+        213
+      ],
+      "byte_length": 82,
+      "dlmm_discriminator_match": false,
+      "sha256": "e094956f380971547c2f19adf4a5b90186b2675924480f5816fdae14539b2a6d"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/9t3EyC9FweyL7PBWvKz3mrXg8B9fwFc9SK3QxM4ENqhd/token_y_mint.bin",
+      "program": "spl-token",
+      "discriminator": [
+        1,
+        0,
+        0,
+        0,
+        215,
+        190,
+        242,
+        213
+      ],
+      "byte_length": 82,
+      "dlmm_discriminator_match": false,
+      "sha256": "e5f699e1ae259dc6bc38c47534b34ea753570e5c79ebccc5eb14a4410a8cfbc4"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/B5Eia4cE71tKuEDaqPHucJLG2fxySKyKzLMewd2nUvoc/reserve_x.bin",
+      "program": "spl-token",
+      "discriminator": [
+        149,
+        145,
+        81,
+        52,
+        102,
+        221,
+        94,
+        217
+      ],
+      "byte_length": 178,
+      "dlmm_discriminator_match": false,
+      "sha256": "a9ff48461133626b4e70f1022365547e91c2dbaae6b944f7277b38ec6b630e80"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/B5Eia4cE71tKuEDaqPHucJLG2fxySKyKzLMewd2nUvoc/reserve_y.bin",
+      "program": "spl-token",
+      "discriminator": [
+        6,
+        155,
+        136,
+        87,
+        254,
+        171,
+        129,
+        132
+      ],
+      "byte_length": 165,
+      "dlmm_discriminator_match": false,
+      "sha256": "58164a700d8b97c296c3c2ed32d6d2c2adca9f4b0051693b12ac4cf04ec53487"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/B5Eia4cE71tKuEDaqPHucJLG2fxySKyKzLMewd2nUvoc/token_x_mint.bin",
+      "program": "spl-token",
+      "discriminator": [
+        1,
+        0,
+        0,
+        0,
+        215,
+        190,
+        242,
+        213
+      ],
+      "byte_length": 535,
+      "dlmm_discriminator_match": false,
+      "sha256": "bc624f25f84b5f73e3e4c799fb51b1b2058c3d80104b43eb580c3305041d166c"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/EtAdVRLFH22rjWh3mcUasKFF27WtHhsaCvK27tPFFWig/reserve_x.bin",
+      "program": "spl-token",
+      "discriminator": [
+        188,
+        15,
+        18,
+        120,
+        128,
+        167,
+        162,
+        7
+      ],
+      "byte_length": 165,
+      "dlmm_discriminator_match": false,
+      "sha256": "66833956dbd86c453ec5b2c1c4aa69f0468787fa6200c621bdd5b75012d2d4f6"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/EtAdVRLFH22rjWh3mcUasKFF27WtHhsaCvK27tPFFWig/reserve_y.bin",
+      "program": "spl-token",
+      "discriminator": [
+        6,
+        155,
+        136,
+        87,
+        254,
+        171,
+        129,
+        132
+      ],
+      "byte_length": 165,
+      "dlmm_discriminator_match": false,
+      "sha256": "4331058cd5f9fce338b56cee80dc050c1c5436ff22aaa0e13addbb87c38a31ce"
+    },
+    {
+      "source": "package-referense/dlmm-sdk/commons/tests/fixtures/EtAdVRLFH22rjWh3mcUasKFF27WtHhsaCvK27tPFFWig/token_x_mint.bin",
+      "program": "spl-token",
+      "discriminator": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        197,
+        193,
+        206
+      ],
+      "byte_length": 82,
+      "dlmm_discriminator_match": false,
+      "sha256": "4fee1c7163a47d0e16602d8296035ca52da83c3ab92af0bf5dc17f0a3514888d"
+    }
+  ]
+}

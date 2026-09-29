@@ -233,60 +233,55 @@ requirements, at which point the guard becomes unnecessary.
 
 ---
 
-## I14 — Five of ten real pools use a seed path not yet in `pda`
+## I14 — Every real pool address is now reproduced, and `pair_type` selects the seed layout
 
 **Context.** The first integration test — fetching live pools from the Meteora
-data API and confirming each derived address against the chain — reproduced some
-pool addresses and not others.
+data API and comparing each derived address against the chain — reproduced some
+pool addresses and not others. This records how that was resolved.
 
-**What is now verified against the chain (not just internally):**
+**What is verified against the chain now (12-pool paced sample, `unmatched 0`):**
 
 | Quantity | Result |
 |---|---|
-| `pda.Reserve` | 20/20 reserve addresses match the chain's `reserve_x` / `reserve_y` for 10 real pools |
-| `pda.AccountKind` / discriminators | 10/10 live accounts carry the LbPair discriminator |
-| `pda.LbPair` (3-seed) | 2 of 10 real pools reproduced |
-| `pda.LbPairV2` (4-seed) | 3 of 10 real pools reproduced |
+| `pda.Reserve` | 24/24 reserve addresses match the chain's `reserve_x` / `reserve_y` |
+| account discriminators | 12/12 live accounts carry the LbPair discriminator |
+| pool addresses | 12/12 reproduced under exactly one of six candidate derivations |
 
-**The gap.** 5 of 10 sampled real pools were reproduced by none of the four
-candidate derivations. An initial reading blamed nested-struct padding, but that
-was wrong, and the fixtures settle it:
+A wider 100-pool sample (before rate limiting was handled) reproduced every
+address it managed to fetch, and surfaced the full distribution: 5 three-seed
+`LbPair`, 7 four-seed `LbPairV2`, 68 `LbPairWithPreset(base_key)`, 1
+`PermissionLbPair(base_key)`.
 
-| Type | IDL Borsh size + 8 | Fixture bytes | Verdict |
-|---|---|---|---|
-| LbPair | 896 + 8 = 904 | 904 | exact |
-| BinArray | 10128 + 8 = 10136 | 10136 | exact |
-| Oracle (base) | 24 + 8 = 32 | 3232 | base struct exact; the rest is the appended observation buffer |
+**The actual root cause of the five that failed.** `LbPair` stores its creation
+inputs in dedicated fields — `pair_type` (offset 75), `bin_step_seed` (73),
+`base_factor_seed` (84) and `base_key` (784) — separate from the live
+`bin_step` and `parameters.base_factor`. The live values are operator-mutable via
+`update_base_fee_parameters`; the seeds are fixed at creation. The test had been
+trying only the bin-step-committing derivations on every pool. `pair_type`
+selects the layout: `0` commits to a bin step, while `3`
+(`CustomizablePermissionless`) commits to a preset parameter held in `base_key`.
+Reading `base_key` and trying `LbPairWithPreset` closed all five. The
+`pda.LbPairWithPreset` function was already present and correct; the test had
+simply never connected it to the account field.
 
-**`LbPair` is Borsh, not `repr(C)`.** The field list alone is enough to compute
-every offset, and no hidden padding handling is needed. The generator is a plain
-Borsh decoder.
+**Two earlier wrong hypotheses, kept because the corrections are the point.**
+1. "Nested-struct `repr(C)` padding makes the offsets uncomputable." Wrong. The
+   fixtures settle it: `LbPair` is 896 Borsh bytes (+ 8 discriminator = 904,
+   matching the fixture exactly) and `BinArray` is 10128 + 8 = 10136. A plain
+   Borsh field walk gives every offset; no padding handling is needed.
+2. "The seeds differ from the live values." Also wrong. `bin_step_seed` always
+   equalled the live `bin_step`; `base_factor_seed` was 0 exactly on three-seed
+   pools and equal to the live base factor on four-seed pools. The distinguishing
+   signal is the `require_base_factor_seed` flag, not a mismatch.
 
-**Why the five still fail.** A scan of the raw account bytes found no
-self-reproducing `(bin_step, base_factor)` pair. The likeliest cause is that the
-seed values were read from the wrong fields: `LbPair` stores `bin_step_seed` and
-`base_factor_seed` separately from the live `bin_step` and `parameters.base_factor`,
-because the live values can be changed by the operator through
-`update_base_fee_parameters` while the seeds are fixed at creation. Confirming
-this needs a correct decoder to read the seed fields, which is what slice 5
-provides.
+**Decision.** The integration test now asserts on pool-address reproduction rather
+than reporting it, so a future regression in any derivation or field offset fails
+loudly. RPC access is paced and 429-tolerant, and a provider that cannot serve a
+pool causes a skip, not a failure: a rate limit says nothing about the SDK.
 
-**Decision.** The integration test asserts on what is fully verified (reserves,
-discriminators) and *reports* pool-address reproduction as a metric, logging the
-unreproduced pools as a known gap. It does not fail on them, because an
-unreproduced pool is a missing derivation, not a regression in what has been
-written — and a red suite that cannot be acted on trains people to ignore red.
-
-**Consequence.** `pda` is not yet sufficient to enumerate every DLMM pool on chain.
-The 18 derivations cover the layouts this SDK targets, but a caller that must
-cover the full chain needs the account decoder to read the seed fields, and
-possibly a fifth seed path. Recorded so the next slice treats it as in-scope, not
-a surprise.
-
-**Reopen when.** The account decoder lands. It should read `bin_step_seed` and
-`base_factor_seed` and re-derive the five pools from those, not from the live
-fields. If it still cannot reproduce them, a fifth layout exists and it gets added
-to `pda` with a live-derived golden value.
+**Reopen if.** The IDL is regenerated, the program is upgraded, or a new
+`pair_type` appears on chain — the disjunction over candidate derivations would
+then need a new branch rather than a widening.
 
 ---
 
