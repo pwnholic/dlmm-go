@@ -849,12 +849,26 @@ PRICE_BIN_IDS = (
     524_288,
 )
 
-AMOUNT_INPUTS = (0, 1, 100, 1_000_000, 1_000_000_000, 40_000_000_000, 45_000_000_000_000, 2**32, 2**63)
+AMOUNT_INPUTS = (
+    0,
+    1,
+    100,
+    1_000_000,
+    1_000_000_000,
+    40_000_000_000,
+    45_000_000_000_000,
+    2**32,
+    2**63,
+    2**64 - 1,
+)
 ROUNDINGS = (DOWN, UP)
 
-BIN_QUOTE_AMOUNTS_Y = (0, 1, 1_000, 1_000_000, 1_000_000_000, 40_000_000_000)
-BIN_QUOTE_AMOUNTS_X = (0, 1, 1_000, 1_000_000, 1_000_000_000, 45_000_000_000_000)
-BIN_QUOTE_VOL_ACC = (0, 10_000, 150_000)
+# in_amount == 0 / 1 exercise the partial-fill path; the integration amount drains the
+# bin's MM layer and (where present) its limit-order layer. The intermediate volatility
+# accumulators the real traversal walks through are covered by the traversal records.
+BIN_QUOTE_AMOUNTS_Y = (0, 1, 40_000_000_000)
+BIN_QUOTE_AMOUNTS_X = (0, 1, 45_000_000_000_000)
+BIN_QUOTE_VOL_ACC = (0, 150_000)
 
 SPLIT_FEE_SHARES = (0, 500, 2000, 2500, 10_000)
 SPLIT_FEE_FEES = (0, 1, 2, 3, 7, 100, 1000, 1_000_000_000, 2**63, 2**64 - 1)
@@ -885,7 +899,7 @@ def build_price_vectors() -> list[dict]:
         if key in seen:
             return
         seen.add(key)
-        inputs = {"bin_step": s(bin_step), "bin_id": s(bin_id)}
+        inputs = {"op": "get_price_from_id", "bin_step": s(bin_step), "bin_id": s(bin_id)}
         if note:
             inputs["note"] = note
         record = {"kind": "price", "inputs": inputs}
@@ -1283,7 +1297,6 @@ def build_bin_quote_vectors() -> list[dict]:
             "price": u128j(bin_.price),
             "amount_x": s(bin_.amount_x),
             "amount_y": s(bin_.amount_y),
-            "liquidity_supply": u128j(bin_.liquidity_supply),
             "open_order_amount": s(bin_.open_order_amount),
             "processed_order_remaining_amount": s(bin_.processed_order_remaining_amount),
             "limit_order_ask_side": s(bin_.limit_order_ask_side),
@@ -1297,7 +1310,7 @@ def build_bin_quote_vectors() -> list[dict]:
         fee_on_input: bool,
         vol_acc: int,
         note: str | None = None,
-    ) -> None:
+    ) -> dict:
         total_fee_rate = pair.get_total_fee_for_vol(vol_acc)
         inputs = dict(
             bin_inputs(bin_),
@@ -1329,7 +1342,7 @@ def build_bin_quote_vectors() -> list[dict]:
             record["rejected"] = "overflow"
             record["rejected_detail"] = str(exc)
             records.append(record)
-            return
+            return record
         record["want"] = {
             "amount_in": s(quote.amount_in),
             "amount_out": s(quote.amount_out),
@@ -1347,9 +1360,11 @@ def build_bin_quote_vectors() -> list[dict]:
         }
         record["rejected"] = None
         records.append(record)
+        return record
 
     # Dense sweep: every non-empty bin, both directions, both fee_on_input values,
-    # support_limit_order both ways, three volatility accumulators.
+    # support_limit_order both ways, two volatility accumulators (the third, the
+    # intermediate values the real traversal walks through, is covered below).
     for array_index in sorted(arrays):
         for bin_ in arrays[array_index]:
             if bin_.is_empty():
@@ -1368,6 +1383,62 @@ def build_bin_quote_vectors() -> list[dict]:
                                     fee_on_input,
                                     vol_acc,
                                 )
+
+    # The fixture carries no processed (partially filled) limit orders, so the
+    # "MM -> processed -> open" three-layer planner would never be reached. Two
+    # synthetic bins with the same field shape cover it; every field the quote reads
+    # is spelled out in the record, so nothing here depends on the fixture.
+    synthetic_bins = (
+        (
+            Bin(
+                bin_id=0,
+                array_index=0,
+                amount_x=0,
+                amount_y=1_000_000_000,
+                price=ONE,
+                liquidity_supply=1_000_000_000 << 64,
+                open_order_amount=500_000_000,
+                processed_order_remaining_amount=200_000_000,
+                limit_order_ask_side=0,
+            ),
+            (0, 1, 999_999_999, 1_000_000_000, 1_000_000_001, 1_200_000_000, 1_700_000_000, 1_800_000_000),
+            True,
+        ),
+        (
+            Bin(
+                bin_id=0,
+                array_index=0,
+                amount_x=2_000_000_000,
+                amount_y=0,
+                price=ONE,
+                liquidity_supply=2_000_000_000 << 64,
+                open_order_amount=500_000_000,
+                processed_order_remaining_amount=200_000_000,
+                limit_order_ask_side=1,
+            ),
+            (0, 1, 2_000_000_000, 2_000_000_001, 2_500_000_000, 2_700_000_000, 2_800_000_000),
+            False,
+        ),
+    )
+    synthetic_records = 0
+    for synthetic_bin, sweep_amounts, sweep_swap_for_y in synthetic_bins:
+        for in_amount in sweep_amounts:
+            for support_limit_order in (True, False):
+                for fee_on_input in (False, True):
+                    for vol_acc in BIN_QUOTE_VOL_ACC:
+                        record = emit(
+                            synthetic_bin,
+                            in_amount,
+                            sweep_swap_for_y,
+                            support_limit_order,
+                            fee_on_input,
+                            vol_acc,
+                            note="synthetic bin carrying processed limit orders",
+                        )
+                        record["inputs"]["pool"] = "synthetic/limit-order-layers"
+                        record["inputs"]["synthetic"] = True
+                        synthetic_records += 1
+    require(synthetic_records > 0, "synthetic limit-order layer sweep emitted nothing")
 
     # The two integration scenarios, replayed bin by bin. Each step is emitted as an
     # ordinary bin_quote record whose inputs carry the traversal's in_amount and
@@ -1399,11 +1470,7 @@ def build_bin_quote_vectors() -> list[dict]:
                     bin_ = arrays[step_array_index][
                         step["bin_id"] - step_array_index * MAX_BIN_PER_ARRAY
                     ]
-                    require(
-                        step["quote"].amount_out > 0 or step["quote"].amount_in == 0,
-                        "traversal step with amount_in == 0 should have been skipped",
-                    )
-                    emit(
+                    record = emit(
                         bin_,
                         step["in_amount"],
                         swap_for_y,
@@ -1414,6 +1481,17 @@ def build_bin_quote_vectors() -> list[dict]:
                             f"{name}: traversal step from amount_in={amount_in}, "
                             f"active_id={bin_.bin_id}"
                         ),
+                    )
+                    # The standalone per-bin vector and the multi-bin traversal must
+                    # agree: the same call produced both.
+                    require(
+                        record["rejected"] is None
+                        and record["want"]["amount_in"] == s(step["quote"].amount_in)
+                        and record["want"]["amount_out"] == s(step["quote"].amount_out)
+                        and record["want"]["fee"] == s(step["quote"].fee)
+                        and record["want"]["protocol_fee"] == s(step["quote"].protocol_fee),
+                        f"traversal step vector disagrees with the traversal for bin "
+                        f"{bin_.bin_id}",
                     )
                 key = (name, support_limit_order, fee_on_input)
                 scenario_totals[key] = result

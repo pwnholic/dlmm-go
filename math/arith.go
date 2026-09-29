@@ -60,3 +60,48 @@ func Mul(a, b num.U128) (num.U128, error) {
 func AddU64(a, b uint64) (num.U128, error) {
 	return Add(num.U128FromU64(a), num.U128FromU64(b))
 }
+
+// Div returns a / b, truncated toward zero.
+//
+// It reports ErrDivideByZero when b is zero and ErrOverflow when the quotient
+// exceeds 128 bits, which cannot happen for a 128-bit numerator but is checked
+// so the function has one contract regardless of its inputs.
+func Div(a, b num.U128) (num.U128, error) {
+	if b.IsZero() {
+		return num.U128{}, fmt.Errorf("%w: division by zero", ErrDivideByZero)
+	}
+
+	q, _, err := uint256.Div256By128(uint256.U256FromU128(a), b)
+	if err != nil {
+		return num.U128{}, fmt.Errorf("%w: %s / %s", ErrOverflow, a, b)
+	}
+
+	return q, nil
+}
+
+// Shr returns a >> shift.
+//
+// A shift of 128 or more is zero, matching the Rust shifts which are applied to
+// values known to fit; a shift of exactly 64 is the SCALE_OFFSET conversion used
+// throughout the price math.
+func Shr(a num.U128, shift uint8) (num.U128, error) {
+	if shift > MaxShiftOffset {
+		return num.U128{}, fmt.Errorf("%w: shift %d exceeds %d", ErrOverflow, shift, MaxShiftOffset)
+	}
+
+	if shift == 0 {
+		return a, nil
+	}
+
+	switch {
+	case shift < 64:
+		lo := a.Lo>>shift | a.Hi<<(64-shift)
+		hi := a.Hi >> shift
+
+		return num.U128{Lo: lo, Hi: hi}, nil
+	case shift == 64:
+		return num.U128{Lo: a.Hi}, nil
+	default:
+		return num.U128{Lo: a.Hi >> (shift - 64)}, nil
+	}
+}
