@@ -199,7 +199,7 @@ check-layering-selftest: ## Prove the layering check can actually fail (guards a
 
 .PHONY: generate
 generate: ## Regenerate program bindings from the IDL
-	$(GO) generate ./program/...
+	cd tools/idlgen && $(GO) run . -idl ../../idls/dlmm.json -out ../../program/lbclmm
 
 .PHONY: check-idl
 check-idl: ## Verify lbclmm constants and pda seeds against the vendored IDL
